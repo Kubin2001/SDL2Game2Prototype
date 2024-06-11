@@ -34,6 +34,10 @@ class Room {
         Room* roomRight = nullptr;
         Room* roomUp = nullptr;
         Room* roomDown = nullptr;
+        int leftExtensionCounter = 0;
+        int rightExtensionCounter = 0;
+        int upperExtensionCounter = 0;
+        int downExtensionCounter = 0;
 
         SDL_Rect* GetRectangle(int index);
 
@@ -66,7 +70,7 @@ class Map
         std::vector<Room*> Rooms;
         Room* currentRoom = nullptr;
 
-        int roomCount = 20;
+        int roomMaxCount = 2;
 
     public:
         Map(SDL_Renderer* renderer);

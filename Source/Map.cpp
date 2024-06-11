@@ -62,7 +62,7 @@ void Room::CreateWalls() {
         tempwall.GetRectangle()->x = GetRectangle(i)->x; //Lewa
         tempwall.GetRectangle()->y = GetRectangle(i)->y + 50;
         tempwall.GetRectangle()->w = 50;
-        tempwall.GetRectangle()->h = GetRectangle(i)->h - 50;
+        tempwall.GetRectangle()->h = GetRectangle(i)->h;
         tempwall.SetType(1);
         walls.push_back(tempwall);
         tempwall.GetRectangle()->x = GetRectangle(i)->x; // Górna
@@ -74,7 +74,7 @@ void Room::CreateWalls() {
         tempwall.GetRectangle()->x = GetRectangle(i)->x + GetRectangle(i)->w - 50; // Prawa
         tempwall.GetRectangle()->y = GetRectangle(i)->y + 50;
         tempwall.GetRectangle()->w = 50;
-        tempwall.GetRectangle()->h = GetRectangle(i)->h - 50;
+        tempwall.GetRectangle()->h = GetRectangle(i)->h;
         tempwall.SetType(3);
         walls.push_back(tempwall);
         tempwall.GetRectangle()->x = GetRectangle(i)->x; // Dolna
@@ -87,41 +87,22 @@ void Room::CreateWalls() {
         prevReference = *GetRectangle(i);
     }
 
-    SDL_Rect temp1;
-    SDL_Rect temp2;
-    for (size_t i = 0; i < walls.size(); i++)
-    {
-        for (size_t j = 0; j < walls.size(); j++)
-        {
-            if (walls[i].GetType() == 1 && walls[j].GetType() == 3) {
+
+    for (size_t i = 0; i < walls.size(); i++){
+        for (size_t j = 0; j < walls.size(); j++){
+            if (walls[i].GetType() == 1 && walls[j].GetType() == 3 && !walls[i].GetErasable() && !walls[j].GetErasable()) { // Warunki z get erasable musz¹ byæ dodane bo inaczej simple collison odwala dziwne rzeczy
                 if(SimpleCollision(*walls[i].GetRectangle(), *walls[j].GetRectangle()) == 1) {
                     walls[i].SetErasable(true);
                     walls[j].SetErasable(true);
                 }
             }
-            else if(walls[i].GetType() == 2 && walls[j].GetType() == 4)
-            {
+            else if(walls[i].GetType() == 2 && walls[j].GetType() == 4 && !walls[i].GetErasable() && !walls[j].GetErasable()){ // Warunki z get erasable musz¹ byæ dodane bo inaczej simple collison odwala dziwne rzeczy
                 if(SimpleCollision(*walls[i].GetRectangle(), *walls[j].GetRectangle()) == 1) {
                     walls[i].SetErasable(true);
                     walls[j].SetErasable(true);
                 }
             }
-            else if (walls[i].GetType() == 4 && walls[j].GetType() == 2)
-            {
-                if(SimpleCollision(*walls[i].GetRectangle(), *walls[j].GetRectangle()) == 1) {
-                    walls[i].SetErasable(true);
-                    walls[j].SetErasable(true);
-                }
-            }
-            else if (walls[i].GetType() == 3 && walls[j].GetType() == 1)
-            {
-                if (SimpleCollision(*walls[i].GetRectangle(), *walls[j].GetRectangle()) == 1) {
-                    walls[i].SetErasable(true);
-                    walls[j].SetErasable(true);
-                }
-            }
-        }
-        
+        } 
     }
 
     for (auto it = walls.begin(); it != walls.end(); ) {
@@ -189,27 +170,68 @@ void Map::LoadTextures() {
 }
 
 void Map::CreateMap() {
-    int random = rand() % 100;
     startingRoom = new Room();
     Rooms.push_back(startingRoom);
     startingRoom->SetTextureFloor(Textures[0].GetTexture());
     startingRoom->SetTextureWall(Textures[1].GetTexture());
     SDL_Rect temprect;
+
     startingRoom->GetRectangles().push_back(temprect);
     startingRoom->GetRectangle(0)->x = 200;
     startingRoom->GetRectangle(0)->y = 100;
     startingRoom->GetRectangle(0)->w = 1000;
     startingRoom->GetRectangle(0)->h = 600;
-    startingRoom->GetRectangles().push_back(temprect);
-    startingRoom->GetRectangle(1)->x = 1200;
-    startingRoom->GetRectangle(1)->y = 100;
-    startingRoom->GetRectangle(1)->w = 1000;
-    startingRoom->GetRectangle(1)->h = 600;
-    startingRoom->GetRectangles().push_back(temprect);
-    startingRoom->GetRectangle(2)->x = 200;
-    startingRoom->GetRectangle(2)->y = -550;
-    startingRoom->GetRectangle(2)->w = 1000;
-    startingRoom->GetRectangle(2)->h = 600;
+    int random = 0;
+    while (roomMaxCount > 0)
+    {
+        random = rand() % 10 +1;
+        if (startingRoom->roomLeft == nullptr && random == 1) {
+            startingRoom->leftExtensionCounter++;
+            roomMaxCount--;
+            startingRoom->GetRectangles().push_back(temprect);
+            startingRoom->GetRectangles().back().x = startingRoom->GetRectangle(0)->x - (950 * startingRoom->rightExtensionCounter);
+            startingRoom->GetRectangles().back().y = 100;
+            startingRoom->GetRectangles().back().w = 1000;
+            startingRoom->GetRectangles().back().h = 600;
+        }
+        else if (startingRoom->roomUp == nullptr && random == 2) {
+            //startingRoom->upperExtensionCounter++;
+            //roomMaxCount--;
+            //startingRoom->GetRectangles().push_back(temprect);
+            //startingRoom->GetRectangles().back().x = 200;
+            //startingRoom->GetRectangles().back().y = startingRoom->GetRectangle(0)->y - (600 * startingRoom->upperExtensionCounter);
+            //startingRoom->GetRectangles().back().w = 1000;
+            //startingRoom->GetRectangles().back().h = 600;
+        }
+        else if (startingRoom->roomRight == nullptr && random == 3) {
+            //startingRoom->rightExtensionCounter++;
+            //roomMaxCount--;
+            //startingRoom->GetRectangles().push_back(temprect);
+            //startingRoom->GetRectangles().back().x = startingRoom->GetRectangle(0)->x + (950 * startingRoom->rightExtensionCounter);
+            //startingRoom->GetRectangles().back().y = 100;
+            //startingRoom->GetRectangles().back().w = 1000;
+            //startingRoom->GetRectangles().back().h = 600;
+        }
+        else if (startingRoom->roomDown == nullptr && random == 4) {
+            //startingRoom->downExtensionCounter++;
+            //roomMaxCount--;
+            //startingRoom->GetRectangles().push_back(temprect);
+            //startingRoom->GetRectangles().back().x = 200;
+            //startingRoom->GetRectangles().back().y = startingRoom->GetRectangle(0)->y + (600 * startingRoom->upperExtensionCounter);
+            //startingRoom->GetRectangles().back().w = 1000;
+            //startingRoom->GetRectangles().back().h = 600;
+        }
+    }
+    //startingRoom->GetRectangles().push_back(temprect);
+    //startingRoom->GetRectangle(1)->x = 1150;
+    //startingRoom->GetRectangle(1)->y = 100;
+    //startingRoom->GetRectangle(1)->w = 1000;
+    //startingRoom->GetRectangle(1)->h = 600;
+    //startingRoom->GetRectangles().push_back(temprect);
+    //startingRoom->GetRectangle(2)->x = 200;
+    //startingRoom->GetRectangle(2)->y = -500;
+    //startingRoom->GetRectangle(2)->w = 1000;
+    //startingRoom->GetRectangle(2)->h = 600;
     startingRoom->CreateWalls();
     currentRoom = startingRoom;
 }

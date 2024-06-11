@@ -38,7 +38,7 @@ int Collision(const SDL_Rect rect, const SDL_Rect rect2) {
 	return 0;
 }
 
-int SimpleCollision(const SDL_Rect rect, const SDL_Rect rect2) {
+bool SimpleCollision(const SDL_Rect rect, const SDL_Rect rect2) {
 
 	int width = rect.w;
 	int height = rect.h;

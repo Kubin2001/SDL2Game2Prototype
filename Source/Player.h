@@ -12,7 +12,7 @@ class Player
         SDL_Renderer* renderer;
         SDL_Texture * texture = nullptr;
         SDL_Rect rectangle{windowWidth /2,windowHeight/2, 32, 70};
-        int moveSpeed = 5;
+        int moveSpeed = 15;
 
         bool CollsionSides[4] = { 0, 0, 0, 0 };
 

@@ -189,37 +189,37 @@ void Map::CreateMap() {
             startingRoom->leftExtensionCounter++;
             roomMaxCount--;
             startingRoom->GetRectangles().push_back(temprect);
-            startingRoom->GetRectangles().back().x = startingRoom->GetRectangle(0)->x - (950 * startingRoom->rightExtensionCounter);
+            startingRoom->GetRectangles().back().x = startingRoom->GetRectangle(0)->x - (950 * startingRoom->leftExtensionCounter);
             startingRoom->GetRectangles().back().y = 100;
             startingRoom->GetRectangles().back().w = 1000;
             startingRoom->GetRectangles().back().h = 600;
         }
         else if (startingRoom->roomUp == nullptr && random == 2) {
-            //startingRoom->upperExtensionCounter++;
-            //roomMaxCount--;
-            //startingRoom->GetRectangles().push_back(temprect);
-            //startingRoom->GetRectangles().back().x = 200;
-            //startingRoom->GetRectangles().back().y = startingRoom->GetRectangle(0)->y - (600 * startingRoom->upperExtensionCounter);
-            //startingRoom->GetRectangles().back().w = 1000;
-            //startingRoom->GetRectangles().back().h = 600;
+            startingRoom->upperExtensionCounter++;
+            roomMaxCount--;
+            startingRoom->GetRectangles().push_back(temprect);
+            startingRoom->GetRectangles().back().x = 200;
+            startingRoom->GetRectangles().back().y = startingRoom->GetRectangle(0)->y - (600 * startingRoom->upperExtensionCounter);
+            startingRoom->GetRectangles().back().w = 1000;
+            startingRoom->GetRectangles().back().h = 600;
         }
         else if (startingRoom->roomRight == nullptr && random == 3) {
-            //startingRoom->rightExtensionCounter++;
-            //roomMaxCount--;
-            //startingRoom->GetRectangles().push_back(temprect);
-            //startingRoom->GetRectangles().back().x = startingRoom->GetRectangle(0)->x + (950 * startingRoom->rightExtensionCounter);
-            //startingRoom->GetRectangles().back().y = 100;
-            //startingRoom->GetRectangles().back().w = 1000;
-            //startingRoom->GetRectangles().back().h = 600;
+            startingRoom->rightExtensionCounter++;
+            roomMaxCount--;
+            startingRoom->GetRectangles().push_back(temprect);
+            startingRoom->GetRectangles().back().x = startingRoom->GetRectangle(0)->x + (950 * startingRoom->rightExtensionCounter);
+            startingRoom->GetRectangles().back().y = 100;
+            startingRoom->GetRectangles().back().w = 1000;
+            startingRoom->GetRectangles().back().h = 600;
         }
         else if (startingRoom->roomDown == nullptr && random == 4) {
-            //startingRoom->downExtensionCounter++;
-            //roomMaxCount--;
-            //startingRoom->GetRectangles().push_back(temprect);
-            //startingRoom->GetRectangles().back().x = 200;
-            //startingRoom->GetRectangles().back().y = startingRoom->GetRectangle(0)->y + (600 * startingRoom->upperExtensionCounter);
-            //startingRoom->GetRectangles().back().w = 1000;
-            //startingRoom->GetRectangles().back().h = 600;
+            startingRoom->downExtensionCounter++;
+            roomMaxCount--;
+            startingRoom->GetRectangles().push_back(temprect);
+            startingRoom->GetRectangles().back().x = 200;
+            startingRoom->GetRectangles().back().y = startingRoom->GetRectangle(0)->y + (600 * startingRoom->downExtensionCounter);
+            startingRoom->GetRectangles().back().w = 1000;
+            startingRoom->GetRectangles().back().h = 600;
         }
     }
     //startingRoom->GetRectangles().push_back(temprect);

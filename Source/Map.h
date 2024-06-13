@@ -21,9 +21,21 @@ class Wall {
 
 };
 
+class Floor {
+    private:
+    SDL_Rect rectangle;
+    bool erasable = false;
+
+    public:
+        bool GetErasable();
+        void SetErasable(bool temp);
+        SDL_Rect* GetRectangle();
+
+};
+
 class Room {
     private:
-        std::vector<SDL_Rect> floorRectangles;
+        std::vector<Floor> Floors;
         SDL_Texture* textureFloor;
         SDL_Texture* textureWall;
         std::vector<Wall> walls;
@@ -39,9 +51,8 @@ class Room {
         int upperExtensionCounter = 0;
         int downExtensionCounter = 0;
 
-        SDL_Rect* GetRectangle(int index);
 
-        std::vector<SDL_Rect> &GetRectangles();
+        std::vector<Floor> &GetFloors();
 
         SDL_Texture* GetTextureFloor();
 
@@ -53,15 +64,17 @@ class Room {
 
         std::vector<Wall> &GetWalls();
 
-        void CreateWalls(SDL_Rect rectangle, char missedWall);
+        void CreateWalls();
 
-        void MoveRectangle(SDL_Rect& rect, char deniedSide);
+        void MoveRectangle(Floor& floor, char deniedSide);
 
         void RenderRoom(SDL_Renderer* renderer, SDL_Rect& camRect);
 
         void CheckCollision(Player * player);
 
         void DeleteWalls();
+
+        void DeleteRectangles();
 };
 
 

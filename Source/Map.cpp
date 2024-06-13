@@ -26,13 +26,25 @@ void Wall::SetErasable(bool temp) {
 }
 //WALL
 
-//ROOM
-SDL_Rect* Room::GetRectangle(int index) {
-    return &floorRectangles[index];
+
+//FLOOR
+SDL_Rect* Floor::GetRectangle() {
+    return &rectangle;
 }
 
-std::vector<SDL_Rect> &Room::GetRectangles() {
-    return floorRectangles;
+bool Floor::GetErasable() {
+    return erasable;
+}
+
+void Floor::SetErasable(bool temp) {
+    erasable = temp;
+}
+//FLOOR
+
+//ROOM
+
+std::vector<Floor> &Room::GetFloors() {
+    return Floors;
 }
 
 SDL_Texture* Room::GetTextureFloor() {
@@ -57,52 +69,48 @@ std::vector<Wall>& Room::GetWalls() {
 
 
 
-void Room::CreateWalls(SDL_Rect rectangle,char missedWall) {
+void Room::CreateWalls() {
     Wall tempwall;
-    SDL_Rect prevReference;
-    if (missedWall != 'l') {
-        tempwall.GetRectangle()->x = rectangle.x; //Lewa
-        tempwall.GetRectangle()->y = rectangle.y;
+    for (auto& it : GetFloors()) {
+        SDL_Rect prevReference;
+        tempwall.GetRectangle()->x = it.GetRectangle()->x; //Lewa
+        tempwall.GetRectangle()->y = it.GetRectangle()->y;
         tempwall.GetRectangle()->w = 50;
-        tempwall.GetRectangle()->h = rectangle.h;
+        tempwall.GetRectangle()->h = it.GetRectangle()->h;
         tempwall.SetType(1);
         walls.push_back(tempwall);
-    }
-    if (missedWall != 'u') {
-        tempwall.GetRectangle()->x = rectangle.x; // Górna
-        tempwall.GetRectangle()->y = rectangle.y;
-        tempwall.GetRectangle()->w = rectangle.w;
+
+        tempwall.GetRectangle()->x = it.GetRectangle()->x; // Górna
+        tempwall.GetRectangle()->y = it.GetRectangle()->y;
+        tempwall.GetRectangle()->w = it.GetRectangle()->w;
         tempwall.GetRectangle()->h = 50;
         tempwall.SetType(2);
         walls.push_back(tempwall);
-    }
-    if (missedWall != 'r') {
-        tempwall.GetRectangle()->x = rectangle.x + rectangle.w - 50; // Prawa
-        tempwall.GetRectangle()->y = rectangle.y;
+
+        tempwall.GetRectangle()->x = it.GetRectangle()->x + it.GetRectangle()->w - 50; // Prawa
+        tempwall.GetRectangle()->y = it.GetRectangle()->y;
         tempwall.GetRectangle()->w = 50;
-        tempwall.GetRectangle()->h = rectangle.h;
+        tempwall.GetRectangle()->h = it.GetRectangle()->h;
         tempwall.SetType(3);
         walls.push_back(tempwall);
-    }
-    if (missedWall != 'd') {
-        tempwall.GetRectangle()->x = rectangle.x; // Dolna
-        tempwall.GetRectangle()->y = rectangle.y + rectangle.h -50;
-        tempwall.GetRectangle()->w = rectangle.w;
+
+        tempwall.GetRectangle()->x = it.GetRectangle()->x; // Dolna
+        tempwall.GetRectangle()->y = it.GetRectangle()->y + it.GetRectangle()->h - 50;
+        tempwall.GetRectangle()->w = it.GetRectangle()->w;
         tempwall.GetRectangle()->h = 50;
         tempwall.SetType(4);
         walls.push_back(tempwall);
     }
-
 }
 
 
 void Room::RenderRoom(SDL_Renderer *renderer, SDL_Rect& camRect) {
     SDL_Rect temp;
-    for (auto& it : floorRectangles) {
-        temp.x = it.x - camRect.x;
-        temp.y = it.y - camRect.y;
-        temp.w = it.w;
-        temp.h = it.h;
+    for (auto& it : GetFloors()) {
+        temp.x = it.GetRectangle()->x - camRect.x;
+        temp.y = it.GetRectangle()->y - camRect.y;
+        temp.w = it.GetRectangle()->w;
+        temp.h = it.GetRectangle()->h;
         SDL_RenderCopy(renderer, GetTextureFloor(), NULL, &temp);
     }
     for (auto &it: walls){
@@ -149,55 +157,74 @@ void Map::LoadTextures() {
     LoadMultipleTextures(Textures, directory, renderer);
 }
 
-void Room::MoveRectangle(SDL_Rect &rect,char deniedSide) {
+void Room::MoveRectangle(Floor &floor,char deniedSide) {
     int random = rand() % 4 + 1;
     switch (random)
     {
         case 1:
             if (deniedSide == 'l') {
-                rect.x += 950;
-                CreateWalls(rect, 'l');
+                floor.GetRectangle()->x += 950;
             }
             else
             {
-                rect.x -= 950;
-                CreateWalls(rect, 'r');
+                floor.GetRectangle()->x -= 950;
             }
             break;
         case 2:
-            if (deniedSide == 'n') {
-                rect.y -= 550;
-                CreateWalls(rect, 'n');
+            if (deniedSide == 'u') {
+                floor.GetRectangle()->y -= 550;
             }
             else
             {
-                rect.y += 550;
-                CreateWalls(rect, 'n');
+                floor.GetRectangle()->y += 550;
             }
             break;
         case 3:
-            if (deniedSide == 'n') {
-                rect.x -= 950;
-                CreateWalls(rect, 'n');
+            if (deniedSide == 'r') {
+                floor.GetRectangle()->x -= 950;
             }
             else
             {
-                rect.x += 950;
-                CreateWalls(rect, 'n');
+                floor.GetRectangle()->x += 950;
             }
             break;
         case 4:
-            if (deniedSide == 'n') {
-                rect.y += 550;
-                CreateWalls(rect, 'n');
+            if (deniedSide == 'd') {
+                floor.GetRectangle()->y += 550;
             }
             else
             {
-                rect.y -= 550;
-                CreateWalls(rect, 'n');
+                floor.GetRectangle()->y -= 550;
             }
             break;
     }
+}
+
+void Room::DeleteRectangles() {
+    int size = 0;
+    for (size_t i = 0; i < GetFloors().size(); ++i) {
+        for (size_t j = i; j < GetFloors().size(); ++j) {
+            if (i != j) {
+                if (GetFloors()[i].GetRectangle()->x == GetFloors()[j].GetRectangle()->x &&
+                    GetFloors()[i].GetRectangle()->y == GetFloors()[j].GetRectangle()->y) {
+                    GetFloors()[j].SetErasable(true);
+                    size++;
+                }
+            }
+        }
+    }
+
+    std::cout << "SIZE: "<< size << "\n";
+
+    for (auto it = GetFloors().begin(); it != GetFloors().end();) {
+        if (it->GetErasable()) {
+            it = GetFloors().erase(it);
+        }
+        else {
+            it++;
+        }
+    }
+
 }
 
 void Room::DeleteWalls() {
@@ -240,18 +267,17 @@ void Map::CreateMap() {
     startingRoom->SetTextureFloor(Textures[0].GetTexture());
     startingRoom->SetTextureWall(Textures[1].GetTexture());
 
-    SDL_Rect temprect;
-    startingRoom->GetRectangles().push_back(temprect);
-    startingRoom->GetRectangle(0)->x = 200;
-    startingRoom->GetRectangle(0)->y = 100;
-    startingRoom->GetRectangle(0)->w = 1000;
-    startingRoom->GetRectangle(0)->h = 600;
-    startingRoom->CreateWalls(*startingRoom->GetRectangle(0),'n');
+    Floor tempFloor;
+    startingRoom->GetFloors().push_back(tempFloor);
+    startingRoom->GetFloors().back().GetRectangle()->x = 200;
+    startingRoom->GetFloors().back().GetRectangle()->y = 100;
+    startingRoom->GetFloors().back().GetRectangle()->w = 1000;
+    startingRoom->GetFloors().back().GetRectangle()->h = 600;
     int random = 0;
-    SDL_Rect leftRect = *startingRoom->GetRectangle(0);
-    SDL_Rect rightRect = *startingRoom->GetRectangle(0);
-    SDL_Rect upperRect = *startingRoom->GetRectangle(0);
-    SDL_Rect downRect = *startingRoom->GetRectangle(0);
+    Floor leftRect = startingRoom->GetFloors().back();
+    Floor rightRect = startingRoom->GetFloors().back();
+    Floor upperRect = startingRoom->GetFloors().back();
+    Floor downRect = startingRoom->GetFloors().back();
     bool leftPossible = false;
     bool rightPossible = false;
     bool upperPossible = false;
@@ -262,60 +288,58 @@ void Map::CreateMap() {
         if (startingRoom->roomLeft == nullptr && random == 1) {
             roomMaxCount--;
             if (leftPossible) {
-                startingRoom->MoveRectangle(leftRect, 'n');
-                startingRoom->GetRectangles().push_back(leftRect);
+                startingRoom->MoveRectangle(leftRect, 'r');
+                startingRoom->GetFloors().push_back(leftRect);
             }
             else
             {
-                leftRect.x -= 950;
-                startingRoom->GetRectangles().push_back(leftRect);
+                leftRect.GetRectangle()->x -= 950;
+                startingRoom->GetFloors().push_back(leftRect);
                 leftPossible = true;
-                startingRoom->CreateWalls(startingRoom->GetRectangles().back(), 'n');
             }
         }
         else if (startingRoom->roomUp == nullptr && random == 2) {
             roomMaxCount--;
             if (upperPossible) {
-                startingRoom->MoveRectangle(upperRect, 'n');
-                startingRoom->GetRectangles().push_back(upperRect);
+                startingRoom->MoveRectangle(upperRect, 'd');
+                startingRoom->GetFloors().push_back(upperRect);
             }
             else
             {
-                upperRect.y -= 550;
-                startingRoom->GetRectangles().push_back(upperRect);
+                upperRect.GetRectangle()->y -= 550;
+                startingRoom->GetFloors().push_back(upperRect);
                 upperPossible = true;
-                startingRoom->CreateWalls(startingRoom->GetRectangles().back(), 'n');
             }
         }
         else if (startingRoom->roomRight == nullptr && random == 3) {
             roomMaxCount--;
             if (rightPossible) {
-                startingRoom->MoveRectangle(rightRect, 'n');
-                startingRoom->GetRectangles().push_back(rightRect);
+                startingRoom->MoveRectangle(rightRect, 'l');
+                startingRoom->GetFloors().push_back(rightRect);
             }
             else
             {
-                rightRect.x += 950;
-                startingRoom->GetRectangles().push_back(rightRect);
+                rightRect.GetRectangle()->x += 950;
+                startingRoom->GetFloors().push_back(rightRect);
                 rightPossible = true;
-                startingRoom->CreateWalls(startingRoom->GetRectangles().back(), 'n');
             }
         }
         else if (startingRoom->roomDown == nullptr && random == 4) {
             roomMaxCount--;
             if (downPossible) {
-                startingRoom->MoveRectangle(downRect, 'n');
-                startingRoom->GetRectangles().push_back(downRect);
+                startingRoom->MoveRectangle(downRect, 'u');
+                startingRoom->GetFloors().push_back(downRect);
             }
             else
             {
-                downRect.y += 550;
-                startingRoom->GetRectangles().push_back(downRect);
+                downRect.GetRectangle()->y += 550;
+                startingRoom->GetFloors().push_back(downRect);
                 downPossible = true;
-                startingRoom->CreateWalls(startingRoom->GetRectangles().back(), 'n');
             }
         }
     }
+    startingRoom->CreateWalls();
+    startingRoom->DeleteRectangles();
     startingRoom->DeleteWalls();
     currentRoom = startingRoom;
 }

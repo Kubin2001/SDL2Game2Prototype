@@ -43,7 +43,7 @@ void Game::Events() {
     player->SetCollision(1, 0);
     player->SetCollision(2, 0);
     player->SetCollision(3, 0);
-    //map->CheckCollision(player.get());
+    map->CheckCollision(player.get());
     camera->UpdatePosition(*player->GetRectangle());
 }
 

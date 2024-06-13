@@ -35,16 +35,16 @@ void Player::Render(SDL_Rect &camRect) {
 
 void Player::Movement(const Uint8* state) {
     bool combined = false;
-    if (state[SDL_SCANCODE_D] && !CollsionSides[2]) {
+    if (state[SDL_SCANCODE_RIGHT] && !CollsionSides[2]) {
         combined = true;
         GetRectangle()->x+= moveSpeed;
     }
-    if (state[SDL_SCANCODE_A] && !CollsionSides[0])
+    if (state[SDL_SCANCODE_LEFT] && !CollsionSides[0])
     {
         combined = true;
         GetRectangle()->x-= moveSpeed;
     }
-    if (state[SDL_SCANCODE_S] && !CollsionSides[1])
+    if (state[SDL_SCANCODE_DOWN] && !CollsionSides[1])
     {
         if (combined) {
             GetRectangle()->y += moveSpeed/2;
@@ -54,7 +54,7 @@ void Player::Movement(const Uint8* state) {
             GetRectangle()->y += moveSpeed;
         }
     }
-    if (state[SDL_SCANCODE_W] && !CollsionSides[3])
+    if (state[SDL_SCANCODE_UP] && !CollsionSides[3])
     {
         if (combined) {
             GetRectangle()->y -= moveSpeed / 2;

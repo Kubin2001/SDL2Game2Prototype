@@ -53,11 +53,15 @@ class Room {
 
         std::vector<Wall> &GetWalls();
 
-        void CreateWalls();
+        void CreateWalls(SDL_Rect rectangle, char missedWall);
+
+        void MoveRectangle(SDL_Rect& rect, char deniedSide);
 
         void RenderRoom(SDL_Renderer* renderer, SDL_Rect& camRect);
 
         void CheckCollision(Player * player);
+
+        void DeleteWalls();
 };
 
 
@@ -70,7 +74,7 @@ class Map
         std::vector<Room*> Rooms;
         Room* currentRoom = nullptr;
 
-        int roomMaxCount = 3;
+        int roomMaxCount = 50;
 
     public:
         Map(SDL_Renderer* renderer);

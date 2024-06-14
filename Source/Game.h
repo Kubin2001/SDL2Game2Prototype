@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Camera.h"
 #include "Map.h"
+#include "UI.h"
 
 class Game {
 private:
@@ -12,6 +13,7 @@ private:
     std::unique_ptr<Player> player;
     std::unique_ptr<Camera> camera;
     std::unique_ptr<Map> map;
+    std::unique_ptr<UI> ui;
 
 
 

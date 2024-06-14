@@ -5,6 +5,22 @@
 #include "TextureManager.h"
 #include "Player.h"
 
+class Door {
+    private:
+        SDL_Rect rectangle;
+        int type = 0;
+        bool erasable = false;
+
+    public:
+        int GetType();
+        void SetType(int temp);
+
+        bool GetErasable();
+        void SetErasable(bool temp);
+        SDL_Rect* GetRectangle();
+
+};
+
 class Wall {
     private:
         SDL_Rect rectangle;
@@ -36,9 +52,12 @@ class Floor {
 class Room {
     private:
         std::vector<Floor> Floors;
+        std::vector<Wall> walls;
+        std::vector<Door> Doors;
+
         SDL_Texture* textureFloor;
         SDL_Texture* textureWall;
-        std::vector<Wall> walls;
+        SDL_Texture* textureDoor;
         int size = 1;
 
     public:
@@ -46,10 +65,6 @@ class Room {
         Room* roomRight = nullptr;
         Room* roomUp = nullptr;
         Room* roomDown = nullptr;
-        int leftExtensionCounter = 0;
-        int rightExtensionCounter = 0;
-        int upperExtensionCounter = 0;
-        int downExtensionCounter = 0;
 
 
         std::vector<Floor> &GetFloors();
@@ -61,6 +76,10 @@ class Room {
         SDL_Texture* GetTextureWall();
 
         void SetTextureWall(SDL_Texture* temptex);
+
+        SDL_Texture* GetTextureDoor();
+
+        void SetTextureDoor(SDL_Texture* temptex);
 
         std::vector<Wall> &GetWalls();
 
@@ -75,6 +94,8 @@ class Room {
         void DeleteWalls();
 
         void DeleteRectangles();
+
+        void LocateDoorPositions();
 };
 
 

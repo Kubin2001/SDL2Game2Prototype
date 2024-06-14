@@ -4,6 +4,12 @@
 #include <SDL.h>
 #include "Map.h"
 #include "Colision.h"
+//DOOR
+SDL_Rect* Door::GetRectangle() {
+    return &rectangle;
+}
+
+//DOOR
 //WALL
 SDL_Rect* Wall::GetRectangle() {
     return &rectangle;
@@ -61,6 +67,14 @@ SDL_Texture* Room::GetTextureWall() {
 
 void Room::SetTextureWall(SDL_Texture* temptex) {
     textureWall = temptex;
+}
+
+SDL_Texture* Room::GetTextureDoor() {
+    return textureDoor;
+}
+
+void Room::SetTextureDoor(SDL_Texture* temptex) {
+    textureDoor = temptex;
 }
 
 std::vector<Wall>& Room::GetWalls() {
@@ -121,6 +135,14 @@ void Room::RenderRoom(SDL_Renderer *renderer, SDL_Rect& camRect) {
         temp.h = it.GetRectangle()->h;
         SDL_RenderCopy(renderer, GetTextureWall(), NULL, &temp);
     }
+    for (auto& it : Doors) {
+        SDL_Rect temp;
+        temp.x = it.GetRectangle()->x - camRect.x;
+        temp.y = it.GetRectangle()->y - camRect.y;
+        temp.w = it.GetRectangle()->w;
+        temp.h = it.GetRectangle()->h;
+        SDL_RenderCopy(renderer, GetTextureDoor(), NULL, &temp);
+    }
 }
 
 void Room::CheckCollision(Player* player) {
@@ -155,6 +177,10 @@ void Map::Render(SDL_Rect& camRect) {
 void Map::LoadTextures() {
     std::string directory = "Textures/Map";
     LoadMultipleTextures(Textures, directory, renderer);
+    for (auto &it :Textures)
+    {
+        std::cout << it.GetName() << "\n";
+    }
 }
 
 void Room::MoveRectangle(Floor &floor,char deniedSide) {
@@ -252,13 +278,80 @@ void Room::DeleteWalls() {
             it++;
         }
     }
-    std::cout << "Remaining walls after deletion:" << std::endl;
+    /*std::cout << "Remaining walls after deletion:" << std::endl;
     for (auto& wall : walls) {
         if(wall.GetType() == 3 || wall.GetType() == 1)
         std::cout << "Wall: Type = " << wall.GetType()
             << ", x = " << wall.GetRectangle()->x
             << ", y = " << wall.GetRectangle()->y << std::endl;
+    }*/
+}
+
+void Room::LocateDoorPositions() {
+    Door door;
+    Doors.push_back(door);
+    Doors.push_back(door);
+    Doors.push_back(door);
+    Doors.push_back(door);
+
+    Doors[0].GetRectangle()->x = 2000;
+    Doors[0].GetRectangle()->y = 0;
+    Doors[0].GetRectangle()->w = 50;
+    Doors[0].GetRectangle()->h = 50;
+
+    Doors[1].GetRectangle()->x = 0;
+    Doors[1].GetRectangle()->y = 2000;
+    Doors[1].GetRectangle()->w = 50;
+    Doors[1].GetRectangle()->h = 50;
+
+    Doors[2].GetRectangle()->x = -2000;
+    Doors[2].GetRectangle()->y = 0;
+    Doors[2].GetRectangle()->w = 50;
+    Doors[2].GetRectangle()->h = 50;
+
+
+    Doors[3].GetRectangle()->x = 0;
+    Doors[3].GetRectangle()->y = -2000;
+    Doors[3].GetRectangle()->w = 50;
+    Doors[3].GetRectangle()->h = 50;
+
+
+    for ( auto &it:Floors)
+    {
+        if (it.GetRectangle()->x < Doors[0].GetRectangle()->x) {
+            Doors[0].GetRectangle()->x = it.GetRectangle()->x;
+            Doors[0].GetRectangle()->y = it.GetRectangle()->y;
+        }
+
+        if (it.GetRectangle()->x > Doors[2].GetRectangle()->x) {
+            Doors[2].GetRectangle()->x = it.GetRectangle()->x;
+            Doors[2].GetRectangle()->y = it.GetRectangle()->y;
+        }
+        if (it.GetRectangle()->y > Doors[3].GetRectangle()->y) {
+            Doors[3].GetRectangle()->y = it.GetRectangle()->y;
+            Doors[3].GetRectangle()->x = it.GetRectangle()->x;
+        }
+        if (it.GetRectangle()->y < Doors[1].GetRectangle()->y) {
+            Doors[1].GetRectangle()->y = it.GetRectangle()->y;
+            Doors[1].GetRectangle()->x = it.GetRectangle()->x;
+        }
     }
+    //Doors[0].GetRectangle()->x = Floors[0].GetRectangle()->x;
+    Doors[0].GetRectangle()->y += Floors[0].GetRectangle()->h / 2;
+
+    Doors[2].GetRectangle()->x += Floors[0].GetRectangle()->w - 50;
+    Doors[2].GetRectangle()->y += Floors[0].GetRectangle()->h / 2;
+
+    Doors[3].GetRectangle()->y += Floors[0].GetRectangle()->h - 50;
+    Doors[3].GetRectangle()->x += Floors[0].GetRectangle()->w / 2;
+
+    //Doors[1].GetRectangle()->y = Floors[0].GetRectangle()->y;
+    Doors[1].GetRectangle()->x += Floors[0].GetRectangle()->w / 2;
+    std::cout << "MAX X: " << Doors[2].GetRectangle()->x << "\n";
+    std::cout << "MIN X: " << Doors[0].GetRectangle()->x << "\n";
+    std::cout << "MAX Y: " << Doors[3].GetRectangle()->y << "\n";
+    std::cout << "MIN Y: " << Doors[1].GetRectangle()->y << "\n";
+
 }
 
 void Map::CreateMap() {
@@ -266,6 +359,7 @@ void Map::CreateMap() {
     Rooms.push_back(startingRoom);
     startingRoom->SetTextureFloor(Textures[0].GetTexture());
     startingRoom->SetTextureWall(Textures[1].GetTexture());
+    startingRoom->SetTextureDoor(Textures[2].GetTexture());
 
     Floor tempFloor;
     startingRoom->GetFloors().push_back(tempFloor);
@@ -341,7 +435,9 @@ void Map::CreateMap() {
     startingRoom->CreateWalls();
     startingRoom->DeleteRectangles();
     startingRoom->DeleteWalls();
+    startingRoom->LocateDoorPositions();
     currentRoom = startingRoom;
+    
 }
 
 void Map::CheckCollision(Player *player) {

@@ -15,6 +15,7 @@ Game::Game() {
     player = nullptr;
     camera = nullptr;
     map = nullptr;
+    ui = nullptr;
 }
 
 void Game::Start() {
@@ -26,6 +27,7 @@ void Game::Start() {
     player = std::make_unique<Player>(renderer);
     camera = std::make_unique<Camera>();
     map = std::make_unique<Map>(renderer);
+    ui = std::make_unique<UI>(renderer);
     LoadTextures();
     map->CreateMap();
 
@@ -43,7 +45,7 @@ void Game::Events() {
     player->SetCollision(1, 0);
     player->SetCollision(2, 0);
     player->SetCollision(3, 0);
-    map->CheckCollision(player.get());
+    //map->CheckCollision(player.get());
     camera->UpdatePosition(*player->GetRectangle());
 }
 

@@ -15,8 +15,6 @@ class Door {
         int GetType();
         void SetType(int temp);
 
-        bool GetErasable();
-        void SetErasable(bool temp);
         SDL_Rect* GetRectangle();
 
 };
@@ -83,6 +81,8 @@ class Room {
 
         std::vector<Wall> &GetWalls();
 
+        std::vector<Door>& GetDoors();
+
         void CreateWalls();
 
         void MoveRectangle(Floor& floor, char deniedSide);
@@ -90,6 +90,8 @@ class Room {
         void RenderRoom(SDL_Renderer* renderer, SDL_Rect& camRect);
 
         void CheckCollision(Player * player);
+
+        int CheckCollisionDoors(Player* player);
 
         void DeleteWalls();
 
@@ -104,13 +106,15 @@ class Map
     private:
         SDL_Renderer* renderer;
         std::vector<Texture> Textures;
-        Room* startingRoom = nullptr;
         std::vector<Room*> Rooms;
-        Room* currentRoom = nullptr;
 
         int roomMaxCount = 50;
 
     public:
+        Room* currentRoom = nullptr;
+
+        Room* startingRoom = nullptr;
+
         Map(SDL_Renderer* renderer);
 
         SDL_Texture *GetTexture();
@@ -121,7 +125,9 @@ class Map
 
         void LoadTextures();
 
-        void CreateMap();
+        void CreateRooms(Room*& tempRoom);
+
+        void CreateLevel();
 
         void CheckCollision(Player* player);
 

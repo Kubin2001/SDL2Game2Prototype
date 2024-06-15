@@ -8,6 +8,13 @@
 SDL_Rect* Door::GetRectangle() {
     return &rectangle;
 }
+int Door::GetType() {
+    return type;
+}
+
+void Door::SetType(int temp) {
+    type = temp;
+}
 
 //DOOR
 //WALL
@@ -51,6 +58,11 @@ void Floor::SetErasable(bool temp) {
 
 std::vector<Floor> &Room::GetFloors() {
     return Floors;
+}
+
+
+std::vector<Door>& Room::GetDoors() {
+    return Doors;
 }
 
 SDL_Texture* Room::GetTextureFloor() {
@@ -162,8 +174,30 @@ void Room::CheckCollision(Player* player) {
                 break;
         }
     }
-
 }
+
+int Room::CheckCollisionDoors(Player* player) {
+    for (auto& it : Doors) {
+        if (SimpleCollision(*player->GetRectangle(), *it.GetRectangle())) {
+            switch (it.GetType()) {
+                case 1:
+                    return 1;
+                    break;
+                case 2:
+                    return 2;
+                    break;
+                case 3:
+                    return 3;
+                    break;
+                case 4:
+                    return 4;
+                    break;
+            }
+        }
+    }
+    return 0;
+}
+
 //ROOM
 
 Map::Map(SDL_Renderer * renderer) {
@@ -278,13 +312,6 @@ void Room::DeleteWalls() {
             it++;
         }
     }
-    /*std::cout << "Remaining walls after deletion:" << std::endl;
-    for (auto& wall : walls) {
-        if(wall.GetType() == 3 || wall.GetType() == 1)
-        std::cout << "Wall: Type = " << wall.GetType()
-            << ", x = " << wall.GetRectangle()->x
-            << ", y = " << wall.GetRectangle()->y << std::endl;
-    }*/
 }
 
 void Room::LocateDoorPositions() {
@@ -293,155 +320,268 @@ void Room::LocateDoorPositions() {
     Doors.push_back(door);
     Doors.push_back(door);
     Doors.push_back(door);
-
-    Doors[0].GetRectangle()->x = 2000;
-    Doors[0].GetRectangle()->y = 0;
-    Doors[0].GetRectangle()->w = 50;
-    Doors[0].GetRectangle()->h = 50;
-
-    Doors[1].GetRectangle()->x = 0;
-    Doors[1].GetRectangle()->y = 2000;
-    Doors[1].GetRectangle()->w = 50;
-    Doors[1].GetRectangle()->h = 50;
-
-    Doors[2].GetRectangle()->x = -2000;
-    Doors[2].GetRectangle()->y = 0;
-    Doors[2].GetRectangle()->w = 50;
-    Doors[2].GetRectangle()->h = 50;
-
-
-    Doors[3].GetRectangle()->x = 0;
-    Doors[3].GetRectangle()->y = -2000;
-    Doors[3].GetRectangle()->w = 50;
-    Doors[3].GetRectangle()->h = 50;
+    
+    if (roomLeft != nullptr) {
+        Doors[0].GetRectangle()->x = 2000;
+        Doors[0].GetRectangle()->y = 0;
+        Doors[0].GetRectangle()->w = 50;
+        Doors[0].GetRectangle()->h = 50;
+        Doors[0].SetType(1);
+    }
+    if (roomRight != nullptr) {
+        Doors[2].GetRectangle()->x = -2000;
+        Doors[2].GetRectangle()->y = 0;
+        Doors[2].GetRectangle()->w = 50;
+        Doors[2].GetRectangle()->h = 50;
+        Doors[2].SetType(3);
+    }
+    if (roomDown != nullptr) {
+        Doors[3].GetRectangle()->x = 0;
+        Doors[3].GetRectangle()->y = -2000;
+        Doors[3].GetRectangle()->w = 50;
+        Doors[3].GetRectangle()->h = 50;
+        Doors[3].SetType(4);
+    }
+    if (roomUp != nullptr) {
+        Doors[1].GetRectangle()->x = 0;
+        Doors[1].GetRectangle()->y = 2000;
+        Doors[1].GetRectangle()->w = 50;
+        Doors[1].GetRectangle()->h = 50;
+        Doors[1].SetType(2);
+    }
 
 
     for ( auto &it:Floors)
     {
-        if (it.GetRectangle()->x < Doors[0].GetRectangle()->x) {
-            Doors[0].GetRectangle()->x = it.GetRectangle()->x;
-            Doors[0].GetRectangle()->y = it.GetRectangle()->y;
+        if (roomLeft != nullptr) {
+            if (it.GetRectangle()->x < Doors[0].GetRectangle()->x) {
+                Doors[0].GetRectangle()->x = it.GetRectangle()->x;
+                Doors[0].GetRectangle()->y = it.GetRectangle()->y;
+            }
         }
-
-        if (it.GetRectangle()->x > Doors[2].GetRectangle()->x) {
-            Doors[2].GetRectangle()->x = it.GetRectangle()->x;
-            Doors[2].GetRectangle()->y = it.GetRectangle()->y;
+        if (roomRight != nullptr) {
+            if (it.GetRectangle()->x > Doors[2].GetRectangle()->x) {
+                Doors[2].GetRectangle()->x = it.GetRectangle()->x;
+                Doors[2].GetRectangle()->y = it.GetRectangle()->y;
+            }
         }
-        if (it.GetRectangle()->y > Doors[3].GetRectangle()->y) {
-            Doors[3].GetRectangle()->y = it.GetRectangle()->y;
-            Doors[3].GetRectangle()->x = it.GetRectangle()->x;
+        if (roomDown != nullptr) {
+            if (it.GetRectangle()->y > Doors[3].GetRectangle()->y) {
+                Doors[3].GetRectangle()->y = it.GetRectangle()->y;
+                Doors[3].GetRectangle()->x = it.GetRectangle()->x;
+            }
         }
-        if (it.GetRectangle()->y < Doors[1].GetRectangle()->y) {
-            Doors[1].GetRectangle()->y = it.GetRectangle()->y;
-            Doors[1].GetRectangle()->x = it.GetRectangle()->x;
+        if (roomUp != nullptr) {
+            if (it.GetRectangle()->y < Doors[1].GetRectangle()->y) {
+                Doors[1].GetRectangle()->y = it.GetRectangle()->y;
+                Doors[1].GetRectangle()->x = it.GetRectangle()->x;
+            }
         }
     }
-    //Doors[0].GetRectangle()->x = Floors[0].GetRectangle()->x;
-    Doors[0].GetRectangle()->y += Floors[0].GetRectangle()->h / 2;
+    if (roomLeft != nullptr) {
+        //Doors[0].GetRectangle()->x = Floors[0].GetRectangle()->x;
+        Doors[0].GetRectangle()->y += Floors[0].GetRectangle()->h / 2;
+        std::cout << "MIN X: " << Doors[0].GetRectangle()->x << "\n";
+    }
 
-    Doors[2].GetRectangle()->x += Floors[0].GetRectangle()->w - 50;
-    Doors[2].GetRectangle()->y += Floors[0].GetRectangle()->h / 2;
+    if (roomRight != nullptr) {
+        Doors[2].GetRectangle()->x += Floors[0].GetRectangle()->w - 50;
+        Doors[2].GetRectangle()->y += Floors[0].GetRectangle()->h / 2;
+        std::cout << "MAX X: " << Doors[2].GetRectangle()->x << "\n";
+    }
 
-    Doors[3].GetRectangle()->y += Floors[0].GetRectangle()->h - 50;
-    Doors[3].GetRectangle()->x += Floors[0].GetRectangle()->w / 2;
+    if (roomDown != nullptr) {
+        Doors[3].GetRectangle()->y += Floors[0].GetRectangle()->h - 50;
+        Doors[3].GetRectangle()->x += Floors[0].GetRectangle()->w / 2;
+        std::cout << "MAX Y: " << Doors[3].GetRectangle()->y << "\n";
+    }
 
-    //Doors[1].GetRectangle()->y = Floors[0].GetRectangle()->y;
-    Doors[1].GetRectangle()->x += Floors[0].GetRectangle()->w / 2;
-    std::cout << "MAX X: " << Doors[2].GetRectangle()->x << "\n";
-    std::cout << "MIN X: " << Doors[0].GetRectangle()->x << "\n";
-    std::cout << "MAX Y: " << Doors[3].GetRectangle()->y << "\n";
-    std::cout << "MIN Y: " << Doors[1].GetRectangle()->y << "\n";
+    if (roomUp != nullptr) {
+        //Doors[1].GetRectangle()->y = Floors[0].GetRectangle()->y;
+        Doors[1].GetRectangle()->x += Floors[0].GetRectangle()->w / 2;
+        std::cout << "MIN Y: " << Doors[1].GetRectangle()->y << "\n";
+    }
+
+
 
 }
 
-void Map::CreateMap() {
-    startingRoom = new Room();
-    Rooms.push_back(startingRoom);
-    startingRoom->SetTextureFloor(Textures[0].GetTexture());
-    startingRoom->SetTextureWall(Textures[1].GetTexture());
-    startingRoom->SetTextureDoor(Textures[2].GetTexture());
+void Map::CreateRooms(Room *&tempRoom) {
+    if (startingRoom == nullptr) {
+        tempRoom = new Room();
+        startingRoom = tempRoom;
+    }
+    Rooms.push_back(tempRoom);
+    tempRoom->SetTextureFloor(Textures[0].GetTexture());
+    tempRoom->SetTextureWall(Textures[1].GetTexture());
+    tempRoom->SetTextureDoor(Textures[2].GetTexture());
 
     Floor tempFloor;
-    startingRoom->GetFloors().push_back(tempFloor);
-    startingRoom->GetFloors().back().GetRectangle()->x = 200;
-    startingRoom->GetFloors().back().GetRectangle()->y = 100;
-    startingRoom->GetFloors().back().GetRectangle()->w = 1000;
-    startingRoom->GetFloors().back().GetRectangle()->h = 600;
+    tempRoom->GetFloors().push_back(tempFloor);
+    tempRoom->GetFloors().back().GetRectangle()->x = 200;
+    tempRoom->GetFloors().back().GetRectangle()->y = 100;
+    tempRoom->GetFloors().back().GetRectangle()->w = 1000;
+    tempRoom->GetFloors().back().GetRectangle()->h = 600;
     int random = 0;
-    Floor leftRect = startingRoom->GetFloors().back();
-    Floor rightRect = startingRoom->GetFloors().back();
-    Floor upperRect = startingRoom->GetFloors().back();
-    Floor downRect = startingRoom->GetFloors().back();
+    Floor leftRect = tempRoom->GetFloors().back();
+    Floor rightRect = tempRoom->GetFloors().back();
+    Floor upperRect = tempRoom->GetFloors().back();
+    Floor downRect = tempRoom->GetFloors().back();
     bool leftPossible = false;
     bool rightPossible = false;
     bool upperPossible = false;
     bool downPossible = false;
     while (roomMaxCount > 0)
     {
-        random = rand() % 10 +1;
-        if (startingRoom->roomLeft == nullptr && random == 1) {
+        random = rand() % 8 +1;
+        if (tempRoom->roomLeft == nullptr && random == 1) {
             roomMaxCount--;
             if (leftPossible) {
-                startingRoom->MoveRectangle(leftRect, 'r');
-                startingRoom->GetFloors().push_back(leftRect);
+                tempRoom->MoveRectangle(leftRect, 'r');
+                tempRoom->GetFloors().push_back(leftRect);
             }
             else
             {
                 leftRect.GetRectangle()->x -= 950;
-                startingRoom->GetFloors().push_back(leftRect);
+                tempRoom->GetFloors().push_back(leftRect);
                 leftPossible = true;
             }
         }
-        else if (startingRoom->roomUp == nullptr && random == 2) {
+        else if(random == 5){
+            if (tempRoom->roomLeft == nullptr) {
+                roomMaxCount--;
+                tempRoom->roomLeft = new Room();
+                CreateRooms(tempRoom->roomLeft);
+            }
+
+        }
+
+        else if (tempRoom->roomUp == nullptr && random == 2) {
             roomMaxCount--;
             if (upperPossible) {
-                startingRoom->MoveRectangle(upperRect, 'd');
-                startingRoom->GetFloors().push_back(upperRect);
+                tempRoom->MoveRectangle(upperRect, 'd');
+                tempRoom->GetFloors().push_back(upperRect);
             }
             else
             {
                 upperRect.GetRectangle()->y -= 550;
-                startingRoom->GetFloors().push_back(upperRect);
+                tempRoom->GetFloors().push_back(upperRect);
                 upperPossible = true;
             }
         }
-        else if (startingRoom->roomRight == nullptr && random == 3) {
+        else if (random == 6) {
+            if (tempRoom->roomUp == nullptr) {
+                roomMaxCount--;
+                tempRoom->roomUp = new Room();
+                CreateRooms(tempRoom->roomUp);
+            }
+
+        }
+
+        else if (tempRoom->roomRight == nullptr && random == 3) {
             roomMaxCount--;
             if (rightPossible) {
-                startingRoom->MoveRectangle(rightRect, 'l');
-                startingRoom->GetFloors().push_back(rightRect);
+                tempRoom->MoveRectangle(rightRect, 'l');
+                tempRoom->GetFloors().push_back(rightRect);
             }
             else
             {
                 rightRect.GetRectangle()->x += 950;
-                startingRoom->GetFloors().push_back(rightRect);
+                tempRoom->GetFloors().push_back(rightRect);
                 rightPossible = true;
             }
         }
-        else if (startingRoom->roomDown == nullptr && random == 4) {
+        else if (random == 7) {
+            if (tempRoom->roomRight == nullptr) {
+                roomMaxCount--;
+                tempRoom->roomRight = new Room();
+                tempRoom->roomRight->roomLeft = tempRoom;
+                CreateRooms(tempRoom->roomRight);
+            }
+
+        }
+
+        else if (tempRoom->roomDown == nullptr && random == 4) {
             roomMaxCount--;
             if (downPossible) {
-                startingRoom->MoveRectangle(downRect, 'u');
-                startingRoom->GetFloors().push_back(downRect);
+                tempRoom->MoveRectangle(downRect, 'u');
+                tempRoom->GetFloors().push_back(downRect);
             }
             else
             {
                 downRect.GetRectangle()->y += 550;
-                startingRoom->GetFloors().push_back(downRect);
+                tempRoom->GetFloors().push_back(downRect);
                 downPossible = true;
             }
         }
+        else if (random == 8) {
+            if (tempRoom->roomDown == nullptr) {
+                roomMaxCount--;
+                tempRoom->roomDown = new Room();
+                CreateRooms(tempRoom->roomDown);
+            }
+
+        }
+
     }
-    startingRoom->CreateWalls();
-    startingRoom->DeleteRectangles();
-    startingRoom->DeleteWalls();
-    startingRoom->LocateDoorPositions();
-    currentRoom = startingRoom;
+    tempRoom->CreateWalls();
+    tempRoom->DeleteRectangles();
+    tempRoom->DeleteWalls();
+    tempRoom->LocateDoorPositions();
     
+}
+
+void Map::CreateLevel() {
+    CreateRooms(startingRoom);
+    currentRoom = startingRoom;
+    std::cout <<"ROOM COUNT: " << Rooms.size() << "\n";
 }
 
 void Map::CheckCollision(Player *player) {
     currentRoom->CheckCollision(player);
+    switch (currentRoom->CheckCollisionDoors(player))
+    {
+        case 1:
+            currentRoom = currentRoom->roomLeft;
+            for (auto& it : currentRoom->GetDoors()) {
+                if (it.GetType() == 3) {
+                    player->GetRectangle()->x = it.GetRectangle()->x - 100;
+                    player->GetRectangle()->y = it.GetRectangle()->y;
+                }
+            }
+            std::cout << currentRoom->GetDoors().size()<<"\n";
+            break;
+        case 2:
+            currentRoom = currentRoom->roomUp;
+            for (auto& it : currentRoom->GetDoors()) {
+                if (it.GetType() == 4) {
+                    player->GetRectangle()->x = it.GetRectangle()->x;
+                    player->GetRectangle()->y = it.GetRectangle()->y -100;
+                }
+            }
+            std::cout << currentRoom->GetDoors().size() << "\n";
+            break;
+        case 3:
+            currentRoom = currentRoom->roomRight;
+            for (auto& it : currentRoom->GetDoors()) {
+                if (it.GetType() == 1) {
+                    player->GetRectangle()->x = it.GetRectangle()->x +100;
+                    player->GetRectangle()->y = it.GetRectangle()->y;
+                }
+            }
+            std::cout << currentRoom->GetDoors().size() << "\n";
+            break;
+        case 4:
+            currentRoom = currentRoom->roomDown;
+            for (auto& it : currentRoom->GetDoors()) {
+                if (it.GetType() == 2) {
+                    player->GetRectangle()->x = it.GetRectangle()->x;
+                    player->GetRectangle()->y = it.GetRectangle()->y + 100;
+                }
+            }
+            std::cout << currentRoom->GetDoors().size() << "\n";
+            break;
+    }
 }
 
 Map::~Map() {

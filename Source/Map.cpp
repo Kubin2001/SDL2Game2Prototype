@@ -451,6 +451,7 @@ void Map::CreateRooms(Room *&tempRoom) {
             if (tempRoom->roomLeft == nullptr) {
                 roomMaxCount--;
                 tempRoom->roomLeft = new Room();
+                tempRoom->roomLeft->roomRight = tempRoom;
                 CreateRooms(tempRoom->roomLeft);
             }
 
@@ -473,6 +474,7 @@ void Map::CreateRooms(Room *&tempRoom) {
             if (tempRoom->roomUp == nullptr) {
                 roomMaxCount--;
                 tempRoom->roomUp = new Room();
+                tempRoom->roomUp->roomDown = tempRoom;
                 CreateRooms(tempRoom->roomUp);
             }
 
@@ -518,6 +520,7 @@ void Map::CreateRooms(Room *&tempRoom) {
             if (tempRoom->roomDown == nullptr) {
                 roomMaxCount--;
                 tempRoom->roomDown = new Room();
+                tempRoom->roomDown->roomUp = tempRoom;
                 CreateRooms(tempRoom->roomDown);
             }
 
@@ -569,7 +572,6 @@ void Map::CheckCollision(Player *player) {
                     player->GetRectangle()->y = it.GetRectangle()->y;
                 }
             }
-            std::cout << currentRoom->GetDoors().size() << "\n";
             break;
         case 4:
             currentRoom = currentRoom->roomDown;
@@ -579,7 +581,6 @@ void Map::CheckCollision(Player *player) {
                     player->GetRectangle()->y = it.GetRectangle()->y + 100;
                 }
             }
-            std::cout << currentRoom->GetDoors().size() << "\n";
             break;
     }
 }

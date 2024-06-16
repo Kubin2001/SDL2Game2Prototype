@@ -12,8 +12,8 @@ int main(int argv, char* argc[])
     //2 dziala
     unsigned int seed = 1;
 
-    srand(seed);
-    //srand(static_cast<unsigned int>(time(0)));
+    //and(seed);
+    srand(static_cast<unsigned int>(time(0)));
     bool status = true;
     Game* game = new Game();
 

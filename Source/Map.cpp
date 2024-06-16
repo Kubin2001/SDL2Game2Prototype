@@ -159,18 +159,26 @@ void Room::RenderRoom(SDL_Renderer *renderer, SDL_Rect& camRect) {
 
 void Room::CheckCollision(Player* player) {
     for (auto& it : walls) {
-        switch (Collision(*player->GetRectangle(), *it.GetRectangle())) {
+        switch (AdvancedCollision(*player->GetRectangle(), *it.GetRectangle(),18)) {
             case 1:
-                player->SetCollision(0, 1);
+                if (it.GetType() == 1 || it.GetType() == 3) {
+                    player->SetCollision(0, 1);
+                }
                 break;
             case 2:
-                player->SetCollision(1, 1);
+                if (it.GetType() == 2 || it.GetType() == 4) {
+                    player->SetCollision(1, 1);
+                }
                 break;
             case 3:
-                player->SetCollision(2, 1);
+                if (it.GetType() == 1 || it.GetType() == 3) {
+                    player->SetCollision(2, 1);
+                }
                 break;
             case 4:
-                player->SetCollision(3, 1);
+                if (it.GetType() == 2 || it.GetType() == 4) {
+                    player->SetCollision(3, 1);
+                }
                 break;
         }
     }
@@ -222,40 +230,24 @@ void Room::MoveRectangle(Floor &floor,char deniedSide) {
     switch (random)
     {
         case 1:
-            if (deniedSide == 'l') {
-                floor.GetRectangle()->x += 950;
-            }
-            else
-            {
-                floor.GetRectangle()->x -= 950;
-            }
+            if (deniedSide == 'l') {floor.GetRectangle()->x += 950; }
+
+            else{floor.GetRectangle()->x -= 950; }
             break;
         case 2:
-            if (deniedSide == 'u') {
-                floor.GetRectangle()->y -= 550;
-            }
-            else
-            {
-                floor.GetRectangle()->y += 550;
-            }
+            if (deniedSide == 'u') {floor.GetRectangle()->y -= 550; }
+
+            else{floor.GetRectangle()->y += 550; }
             break;
         case 3:
-            if (deniedSide == 'r') {
-                floor.GetRectangle()->x -= 950;
-            }
-            else
-            {
-                floor.GetRectangle()->x += 950;
-            }
+            if (deniedSide == 'r') {floor.GetRectangle()->x -= 950; }
+
+            else{floor.GetRectangle()->x += 950; }
             break;
         case 4:
-            if (deniedSide == 'd') {
-                floor.GetRectangle()->y += 550;
-            }
-            else
-            {
-                floor.GetRectangle()->y -= 550;
-            }
+            if (deniedSide == 'd') {floor.GetRectangle()->y += 550; }
+
+            else{floor.GetRectangle()->y -= 550; }
             break;
     }
 }
@@ -434,6 +426,7 @@ void Map::CreateRooms(Room *&tempRoom) {
     while (roomMaxCount > 0)
     {
         random = rand() % 8 +1;
+        int random2 = rand() % 4 + 1;
         if (tempRoom->roomLeft == nullptr && random == 1) {
             roomMaxCount--;
             if (leftPossible) {
@@ -453,6 +446,12 @@ void Map::CreateRooms(Room *&tempRoom) {
                 tempRoom->roomLeft = new Room();
                 tempRoom->roomLeft->roomRight = tempRoom;
                 CreateRooms(tempRoom->roomLeft);
+                if (random2 == 1 && tempRoom->roomUp == nullptr) {
+                    roomMaxCount--;
+                    tempRoom->roomUp = new Room();
+                    tempRoom->roomUp->roomDown = tempRoom;
+                    CreateRooms(tempRoom->roomUp);
+                }
             }
 
         }
@@ -476,8 +475,13 @@ void Map::CreateRooms(Room *&tempRoom) {
                 tempRoom->roomUp = new Room();
                 tempRoom->roomUp->roomDown = tempRoom;
                 CreateRooms(tempRoom->roomUp);
+                if (random2 == 2 && tempRoom->roomLeft == nullptr) {
+                    roomMaxCount--;
+                    tempRoom->roomLeft = new Room();
+                    tempRoom->roomLeft->roomRight = tempRoom;
+                    CreateRooms(tempRoom->roomLeft);
+                }
             }
-
         }
 
         else if (tempRoom->roomRight == nullptr && random == 3) {
@@ -499,6 +503,12 @@ void Map::CreateRooms(Room *&tempRoom) {
                 tempRoom->roomRight = new Room();
                 tempRoom->roomRight->roomLeft = tempRoom;
                 CreateRooms(tempRoom->roomRight);
+                if (random2 == 3 && tempRoom->roomDown == nullptr) {
+                    roomMaxCount--;
+                    tempRoom->roomDown = new Room();
+                    tempRoom->roomDown->roomUp = tempRoom;
+                    CreateRooms(tempRoom->roomDown);
+                }
             }
 
         }
@@ -522,6 +532,12 @@ void Map::CreateRooms(Room *&tempRoom) {
                 tempRoom->roomDown = new Room();
                 tempRoom->roomDown->roomUp = tempRoom;
                 CreateRooms(tempRoom->roomDown);
+                if (random2 == 1 && tempRoom->roomRight == nullptr) {
+                    roomMaxCount--;
+                    tempRoom->roomRight = new Room();
+                    tempRoom->roomRight->roomLeft = tempRoom;
+                    CreateRooms(tempRoom->roomRight);
+                }
             }
 
         }
@@ -590,47 +606,3 @@ Map::~Map() {
         SDL_DestroyTexture(it.GetTexture());
     }
 }
-
-
-/*if (startingRoom->roomLeft == nullptr && random == 1) {
-    roomMaxCount--;
-    MoveRectangle(leftRect, 'r');
-    startingRoom->GetRectangles().push_back(leftRect);
-}
-else if (startingRoom->roomUp == nullptr && random == 2) {
-    roomMaxCount--;
-    MoveRectangle(upperRect, 'd');
-    startingRoom->GetRectangles().push_back(upperRect);
-}
-else if (startingRoom->roomRight == nullptr && random == 3) {
-    roomMaxCount--;
-    MoveRectangle(rightRect, 'l');
-    startingRoom->GetRectangles().push_back(rightRect);
-}
-else if (startingRoom->roomDown == nullptr && random == 4) {
-    roomMaxCount--;
-    MoveRectangle(downRect, 'u');
-    startingRoom->GetRectangles().push_back(downRect);
-}*/
-
-
-/*if (startingRoom->roomLeft == nullptr && random == 1) {
-    roomMaxCount--;
-    leftRect.x -= 950;
-    startingRoom->GetRectangles().push_back(leftRect);
-}
-else if (startingRoom->roomUp == nullptr && random == 2) {
-    roomMaxCount--;
-    upperRect.y -= 600;
-    startingRoom->GetRectangles().push_back(upperRect);
-}
-else if (startingRoom->roomRight == nullptr && random == 3) {
-    roomMaxCount--;
-    rightRect.x += 950;
-    startingRoom->GetRectangles().push_back(rightRect);
-}
-else if (startingRoom->roomDown == nullptr && random == 4) {
-    roomMaxCount--;
-    downRect.y += 600;
-    startingRoom->GetRectangles().push_back(downRect);
-}*/

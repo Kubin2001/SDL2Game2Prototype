@@ -34,30 +34,61 @@ void Player::Render(SDL_Rect &camRect) {
 }
 
 void Player::Movement(const Uint8* state) {
-    bool combined = false;
+    if (!state[SDL_SCANCODE_RIGHT] && !state[SDL_SCANCODE_LEFT] && !state[SDL_SCANCODE_UP] && !state[SDL_SCANCODE_DOWN]) {
+        return;
+    }
+
     if (state[SDL_SCANCODE_RIGHT] && !CollsionSides[2]) {
-        combined = true;
-        GetRectangle()->x+= moveSpeed;
+        if (state[SDL_SCANCODE_UP] && !CollsionSides[3]) {
+            GetRectangle()->x += (moveSpeed / 2) + 1;
+            GetRectangle()->y -= (moveSpeed / 2) + 1;
+        }
+        else if (state[SDL_SCANCODE_DOWN] && !CollsionSides[1]) {
+            GetRectangle()->x += (moveSpeed / 2) + 1;
+            GetRectangle()->y += (moveSpeed / 2) + 1;
+        }
+        else
+        {
+            GetRectangle()->x += moveSpeed;
+        }
     }
-    if (state[SDL_SCANCODE_LEFT] && !CollsionSides[0])
-    {
-        combined = true;
-        GetRectangle()->x-= moveSpeed;
+    else if (state[SDL_SCANCODE_LEFT] && !CollsionSides[0]) {
+        if (state[SDL_SCANCODE_UP] && !CollsionSides[3]) {
+            GetRectangle()->x -= (moveSpeed / 2) + 1;
+            GetRectangle()->y -= (moveSpeed / 2) + 1;
+        }
+        else if (state[SDL_SCANCODE_DOWN] && !CollsionSides[1]) {
+            GetRectangle()->x -= (moveSpeed / 2) + 1;
+            GetRectangle()->y += (moveSpeed / 2) + 1;
+        }
+        else
+        {
+            GetRectangle()->x -= moveSpeed;
+        }
     }
-    if (state[SDL_SCANCODE_DOWN] && !CollsionSides[1])
-    {
-        if (combined) {
-            GetRectangle()->y += moveSpeed/2;
+    else if (state[SDL_SCANCODE_DOWN] && !CollsionSides[1]) {
+
+        if (state[SDL_SCANCODE_LEFT] && !CollsionSides[0]) {
+            GetRectangle()->x -= (moveSpeed / 2) + 1;
+            GetRectangle()->y += (moveSpeed / 2) + 1;
+        }
+        else if (state[SDL_SCANCODE_RIGHT] && !CollsionSides[2]) {
+            GetRectangle()->x += (moveSpeed / 2) + 1;
+            GetRectangle()->y += (moveSpeed / 2) + 1;
         }
         else
         {
             GetRectangle()->y += moveSpeed;
         }
     }
-    if (state[SDL_SCANCODE_UP] && !CollsionSides[3])
-    {
-        if (combined) {
-            GetRectangle()->y -= moveSpeed / 2;
+    else if (state[SDL_SCANCODE_UP] && !CollsionSides[3]) {
+        if (state[SDL_SCANCODE_LEFT] && !CollsionSides[0]) {
+            GetRectangle()->x -= (moveSpeed / 2) + 1;
+            GetRectangle()->y -= (moveSpeed / 2) + 1;
+        }
+        else if (state[SDL_SCANCODE_RIGHT] && !CollsionSides[2]) {
+            GetRectangle()->x += (moveSpeed / 2) + 1;
+            GetRectangle()->y -= (moveSpeed / 2) + 1;
         }
         else
         {

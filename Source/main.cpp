@@ -5,6 +5,7 @@ int windowWidth = 1400;
 int windowHeight = 800;
 long long int framesCounter = 0;
 int windowType = 2;
+bool status = true;
 
 int main(int argv, char* argc[])
 {
@@ -14,7 +15,6 @@ int main(int argv, char* argc[])
 
     //and(seed);
     srand(static_cast<unsigned int>(time(0)));
-    bool status = true;
     Game* game = new Game();
 
     game->Start();

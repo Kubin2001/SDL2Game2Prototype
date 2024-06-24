@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "Map.h"
 #include "Colision.h"
+#include "UI.h"
 //DOOR
 SDL_Rect* Door::GetRectangle() {
     return &rectangle;
@@ -208,23 +209,6 @@ int Room::CheckCollisionDoors(Player* player) {
 
 //ROOM
 
-Map::Map(SDL_Renderer * renderer) {
-    this->renderer = renderer;
-}
-
-void Map::Render(SDL_Rect& camRect) {
-    currentRoom->RenderRoom(renderer, camRect);
-}
-
-void Map::LoadTextures() {
-    std::string directory = "Textures/Map";
-    LoadMultipleTextures(Textures, directory, renderer);
-    for (auto &it :Textures)
-    {
-        std::cout << it.GetName() << "\n";
-    }
-}
-
 void Room::MoveRectangle(Floor &floor,char deniedSide) {
     int random = rand() % 4 + 1;
     switch (random)
@@ -393,9 +377,51 @@ void Room::LocateDoorPositions() {
         Doors[1].GetRectangle()->x += Floors[0].GetRectangle()->w / 2;
         std::cout << "MIN Y: " << Doors[1].GetRectangle()->y << "\n";
     }
+}
 
+void Room::DrawMinimap(Minimap *minimap,int xOffset, int yOffset, std::optional<char> prevRoom) {
+    for (auto& it : GetFloors()) {
+        minimap->CreateTile(*it.GetRectangle(), xOffset, yOffset);
+    }
+    if (roomLeft != nullptr && prevRoom != 'r') {
+        int localX = xOffset -= (roomLeft->Doors[2].GetRectangle()->x - Floors[0].GetRectangle()->w - 50);
+        int localY = yOffset -= (roomLeft->Doors[2].GetRectangle()->y - Floors[0].GetRectangle()->h / 2);
+        roomLeft->DrawMinimap(minimap, localX, localY,'l');
+    }
+    if (roomUp != nullptr && prevRoom != 'd') {
+        int localX = xOffset -= (roomUp->Doors[3].GetRectangle()->x - Floors[0].GetRectangle()->h - 50);
+        int localY = yOffset -= (roomUp->Doors[3].GetRectangle()->y - Floors[0].GetRectangle()->w / 2);
+        roomUp->DrawMinimap(minimap, localX, localY,'u');
+    }
+    if (roomRight != nullptr && prevRoom != 'l') {
+        int localX = xOffset;
+        int localY = yOffset -= (roomRight->Doors[0].GetRectangle()->y - Floors[0].GetRectangle()->w / 2);
+        roomRight->DrawMinimap(minimap, localX, localY,'r');
+    }
+    if (roomDown != nullptr && prevRoom != 'u') {
+        int localX = xOffset -= (roomDown->Doors[1].GetRectangle()->x + Floors[0].GetRectangle()->w / 2);
+        int localY = yOffset;
+        roomDown->DrawMinimap(minimap, localX, localY,'d');
+    }
+}
 
+//ROOM
+Map::Map(SDL_Renderer* renderer) {
+    this->renderer = renderer;
+    this->minimap = std::make_unique<Minimap>(renderer);
+}
 
+void Map::Render(SDL_Rect& camRect) {
+    currentRoom->RenderRoom(renderer, camRect);
+}
+
+void Map::LoadTextures() {
+    std::string directory = "Textures/Map";
+    LoadMultipleTextures(Textures, directory, renderer);
+    for (auto& it : Textures)
+    {
+        std::cout << it.GetName() << "\n";
+    }
 }
 
 void Map::CreateRooms(Room *&tempRoom) {
@@ -550,10 +576,17 @@ void Map::CreateRooms(Room *&tempRoom) {
     
 }
 
-void Map::CreateLevel() {
+void Map::CreateLevel(UI *ui) {
     CreateRooms(startingRoom);
     currentRoom = startingRoom;
     std::cout <<"ROOM COUNT: " << Rooms.size() << "\n";
+    minimap->LoadTextures();
+    //for (auto& it : startingRoom->GetFloors()) {
+    //    minimap->CreateTile(*it.GetRectangle(),0,0);
+    //}
+    currentRoom->DrawMinimap(minimap.get(), 0, 0,std::nullopt);
+    ui->minimap = std::move(minimap);
+
 }
 
 void Map::CheckCollision(Player *player) {
@@ -605,4 +638,8 @@ Map::~Map() {
     for (auto& it : Textures) {
         SDL_DestroyTexture(it.GetTexture());
     }
+    for (auto& it : Rooms) {
+        delete it;
+    }
+    Rooms.clear();
 }

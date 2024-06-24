@@ -2,23 +2,17 @@
 #include <iostream>
 #include <SDL.h>
 #include <vector>
+#include <optional>
 #include "Font.h"
+#include "TextureManager.h"
+#include "Minimap.h"
 
-
-class ButtonInfo {
-    private:
-        SDL_Rect rectangle;
-        std::string text = "";
-
-    public:
-        std::string GetText();
-        void SetText(std::string temptext);
-        SDL_Rect* GetRectangle();
-
-};
 
 class Button {
     private:
+        static SDL_Texture* greyTexture;
+        static SDL_Texture* whiteTexture;
+        SDL_Texture* texture;
         SDL_Rect rectangle;
         std::string text;
         int textSize;
@@ -26,6 +20,15 @@ class Button {
         bool predefinedSize = true;
 
     public:
+        static SDL_Texture* GetGreyTexture();
+        static void SetGreyTexture(SDL_Texture * temp);
+        static SDL_Texture* GetWhiteTexture();
+        static void SetWhiteTexture(SDL_Texture* temp);
+
+
+        SDL_Texture* GetTexture();
+
+        void SetTexture(SDL_Texture* temp);
         std::string GetText();
         void SetText(std::string temptext);
         SDL_Rect* GetRectangle();
@@ -39,65 +42,35 @@ class Button {
 
 };
 
-class Hearth {
-    private:
-        SDL_Rect rectangle;
-
-    public:
-        SDL_Rect* GetRectangle();
-
-};
 
 class UI
 {
     private:
         SDL_Renderer* renderer;
-        SDL_Texture * texturehearth = nullptr;
-        SDL_Texture* textureButton = nullptr;
-        SDL_Texture* textureButtonInfo = nullptr;
-        std::vector<Hearth> HP;
+
+        std::vector<Texture> Textures;
         std::vector<Button> Buttons;
-        ButtonInfo* buttonInfo;
-        int menuType = 0;
-        int score = 0;
+
+        bool showMap = false;
+        int mapDelay = 0;
+
 
     public:
         Font* font;
 
+        std::unique_ptr<Minimap> minimap;
+
         UI(SDL_Renderer* renderer);
 
-        SDL_Texture *GetTextureHearth();
-        void SetTextureHearth(SDL_Texture* temptex);
-        SDL_Texture* GetTextureButton();
-        void SetTextureButton(SDL_Texture* temptex);
-        SDL_Texture* GetTextureButtonInfo();
-        void SetTextureButtonInfo(SDL_Texture* temptex);
-        int GetScore();
-        void SetScore(int temp);
+        void LoadTextures();
 
-        std::vector<Hearth> &getHP();
-        void CreateHearths();
-        void RemoveHearths();
-        void AddHearth();
-
-        void CreateButton();
-
-        void CreateSingleButton(int x, int y, int w, int h, std::string text, int textSize, int textStep, bool sizePredefined);
-
-        void CreateButtonInfo(int x, int y, int w, int h, std::string text, int textSize, int textStep);
+        void CreateSingleButton(int x, int y, int w, int h, int texture, std::optional<std::string> text, std::optional<int> textSize, std::optional<int> textStep, std::optional<bool> textsizePredefined);
 
         void Render();
-        void RenderHP();
-        void RenderScore();
-        void RenderButton();
 
         void RenderSingleButton(int index, int textureType);
 
-        void CreateScoreButton();
-
-        void OnClick(SDL_Event event);
-
-        void OnClickEditor(int &number, SDL_Event event);
+        void OpenMap(SDL_Event event);
 
         ~UI();
 };

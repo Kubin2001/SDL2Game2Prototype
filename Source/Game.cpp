@@ -8,6 +8,7 @@
 extern int windowWidth;
 extern int windowHeight;
 extern long long int framesCounter;
+extern bool status;
 
 Game::Game() {
     window = nullptr;
@@ -29,7 +30,7 @@ void Game::Start() {
     map = std::make_unique<Map>(renderer);
     ui = std::make_unique<UI>(renderer);
     LoadTextures();
-    map->CreateLevel();
+    map->CreateLevel(ui.get());
 
 
 }
@@ -37,6 +38,7 @@ void Game::Start() {
 void Game::LoadTextures() {
     player->SetTexture(load("textures/player.png", renderer));
     map->LoadTextures();
+    ui->LoadTextures();
 }
 
 void Game::Events() {
@@ -47,11 +49,17 @@ void Game::Events() {
     player->SetCollision(3, 0);
     map->CheckCollision(player.get());
     camera->UpdatePosition(*player->GetRectangle());
+    while (SDL_PollEvent(&event)) {
+        ui->OpenMap(event);
+        Exit();
+    }
 }
 
-void Game::Exit(bool& status, const Uint8* state) {
-    if (state[SDL_SCANCODE_ESCAPE]) {
-        status = false;
+void Game::Exit() {
+    if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+            status = false;
+        }
     }
 }
 
@@ -59,13 +67,13 @@ void Game::Movement(bool &status) {
     SDL_PumpEvents();
     const Uint8* state = SDL_GetKeyboardState(NULL);
     player->Movement(state);
-    Exit(status,state);
 }
 
 void Game::Render() {
     SDL_RenderClear(renderer);
     map->Render(*camera->GetRectangle());
     player->Render(*camera->GetRectangle());
+    ui->Render();
     SDL_RenderPresent(renderer);
 }
 

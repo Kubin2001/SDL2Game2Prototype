@@ -14,6 +14,7 @@ private:
     std::unique_ptr<Camera> camera;
     std::unique_ptr<Map> map;
     std::unique_ptr<UI> ui;
+    SDL_Event event = {};
 
 
 
@@ -26,7 +27,7 @@ public:
 
     void Events();
 
-    void Exit(bool& status, const Uint8* state);
+    void Exit();
 
     void Movement(bool& status);
 

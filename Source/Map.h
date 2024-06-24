@@ -2,8 +2,12 @@
 #include <iostream>
 #include <SDL.h>
 #include <vector>
+#include <memory>
+#include <optional>
 #include "TextureManager.h"
 #include "Player.h"
+#include "Minimap.h"
+#include "UI.h"
 
 class Door {
     private:
@@ -64,7 +68,6 @@ class Room {
         Room* roomUp = nullptr;
         Room* roomDown = nullptr;
 
-
         std::vector<Floor> &GetFloors();
 
         SDL_Texture* GetTextureFloor();
@@ -98,6 +101,8 @@ class Room {
         void DeleteRectangles();
 
         void LocateDoorPositions();
+
+        void DrawMinimap(Minimap* minimap, int xOffset, int yOffset, std::optional<char> prevRoom);
 };
 
 
@@ -115,6 +120,8 @@ class Map
 
         Room* startingRoom = nullptr;
 
+        std::unique_ptr<Minimap> minimap;
+
         Map(SDL_Renderer* renderer);
 
         SDL_Texture *GetTexture();
@@ -127,7 +134,7 @@ class Map
 
         void CreateRooms(Room*& tempRoom);
 
-        void CreateLevel();
+        void CreateLevel(UI* ui);
 
         void CheckCollision(Player* player);
 

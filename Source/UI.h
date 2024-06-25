@@ -47,8 +47,6 @@ class UI
 {
     private:
         SDL_Renderer* renderer;
-
-        std::vector<Texture> Textures;
         std::vector<Button> Buttons;
 
         bool showMap = false;
@@ -62,7 +60,7 @@ class UI
 
         UI(SDL_Renderer* renderer);
 
-        void LoadTextures();
+        void LoadTextures(TextureManager* textureManager);
 
         void CreateSingleButton(int x, int y, int w, int h, int texture, std::optional<std::string> text, std::optional<int> textSize, std::optional<int> textStep, std::optional<bool> textsizePredefined);
 

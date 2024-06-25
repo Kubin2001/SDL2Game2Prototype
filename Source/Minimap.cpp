@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SDL.h>
 #include "Minimap.h"
+#include "TextureManager.h"
 
 extern int windowWidth;
 extern int windowHeight;
@@ -15,19 +16,11 @@ Minimap::Minimap(SDL_Renderer * renderer) {
     this->renderer = renderer;
 }
 
-void Minimap::LoadTextures() {
-    LoadMultipleTextures(textures, "Textures/Interface/Minimap", renderer);
-    for (auto& it : textures) {
-        if (it.GetName() == "Tile") {
-            textureTile = it.GetTexture();
-        }
-        else if (it.GetName() == "Player") {
-            texturePlayer = it.GetTexture();
-        }
-        else if (it.GetName() == "Doors") {
-            textureDoor = it.GetTexture();
-        }
-    }
+void Minimap::LoadTextures(TextureManager * texureManger) {
+    texureManger->LoadMultipleTextures("Textures/Interface/Minimap");
+    textureTile = texureManger->GetTextureByName("Tile");
+    texturePlayer = texureManger->GetTextureByName("Player");
+    textureDoor = texureManger->GetTextureByName("Doors");
 }
 
 void Minimap::Render() {
@@ -46,8 +39,6 @@ void Minimap::CreateTile(SDL_Rect rect, int CordDiffX, int CordDiffY) {
 }
 
 Minimap::~Minimap() {
-    for (auto& it : textures) {
-        SDL_DestroyTexture(it.GetTexture());
-    }
+
 }
 

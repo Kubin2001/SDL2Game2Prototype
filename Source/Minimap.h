@@ -43,13 +43,12 @@ class Minimap
         PlayerMinimap playerMinimap;
         std::vector<DoorMinimap> Doors;
         std::vector<TileMinimap> Tiles;
-        std::vector<Texture> textures;
 
     public:
         
         Minimap(SDL_Renderer* renderer);
 
-        void LoadTextures();
+        void LoadTextures(TextureManager* texureManger);
 
         void Render();
 

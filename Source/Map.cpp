@@ -415,24 +415,21 @@ void Map::Render(SDL_Rect& camRect) {
     currentRoom->RenderRoom(renderer, camRect);
 }
 
-void Map::LoadTextures() {
+void Map::LoadTextures(TextureManager * texturemanager) {
     std::string directory = "Textures/Map";
-    LoadMultipleTextures(Textures, directory, renderer);
-    for (auto& it : Textures)
-    {
-        std::cout << it.GetName() << "\n";
-    }
+    texturemanager->LoadMultipleTextures(directory);
+    minimap->LoadTextures(texturemanager);
 }
 
-void Map::CreateRooms(Room *&tempRoom) {
+void Map::CreateRooms(Room *&tempRoom, TextureManager* texturemanager) {
     if (startingRoom == nullptr) {
         tempRoom = new Room();
         startingRoom = tempRoom;
     }
     Rooms.push_back(tempRoom);
-    tempRoom->SetTextureFloor(Textures[0].GetTexture());
-    tempRoom->SetTextureWall(Textures[1].GetTexture());
-    tempRoom->SetTextureDoor(Textures[2].GetTexture());
+    tempRoom->SetTextureFloor(texturemanager->GetTextureByName("grass"));
+    tempRoom->SetTextureWall(texturemanager->GetTextureByName("platform"));
+    tempRoom->SetTextureDoor(texturemanager->GetTextureByName("platform2"));
 
     Floor tempFloor;
     tempRoom->GetFloors().push_back(tempFloor);
@@ -471,12 +468,12 @@ void Map::CreateRooms(Room *&tempRoom) {
                 roomMaxCount--;
                 tempRoom->roomLeft = new Room();
                 tempRoom->roomLeft->roomRight = tempRoom;
-                CreateRooms(tempRoom->roomLeft);
+                CreateRooms(tempRoom->roomLeft,texturemanager);
                 if (random2 == 1 && tempRoom->roomUp == nullptr) {
                     roomMaxCount--;
                     tempRoom->roomUp = new Room();
                     tempRoom->roomUp->roomDown = tempRoom;
-                    CreateRooms(tempRoom->roomUp);
+                    CreateRooms(tempRoom->roomUp,texturemanager);
                 }
             }
 
@@ -500,12 +497,12 @@ void Map::CreateRooms(Room *&tempRoom) {
                 roomMaxCount--;
                 tempRoom->roomUp = new Room();
                 tempRoom->roomUp->roomDown = tempRoom;
-                CreateRooms(tempRoom->roomUp);
+                CreateRooms(tempRoom->roomUp, texturemanager);
                 if (random2 == 2 && tempRoom->roomLeft == nullptr) {
                     roomMaxCount--;
                     tempRoom->roomLeft = new Room();
                     tempRoom->roomLeft->roomRight = tempRoom;
-                    CreateRooms(tempRoom->roomLeft);
+                    CreateRooms(tempRoom->roomLeft, texturemanager);
                 }
             }
         }
@@ -528,12 +525,12 @@ void Map::CreateRooms(Room *&tempRoom) {
                 roomMaxCount--;
                 tempRoom->roomRight = new Room();
                 tempRoom->roomRight->roomLeft = tempRoom;
-                CreateRooms(tempRoom->roomRight);
+                CreateRooms(tempRoom->roomRight, texturemanager);
                 if (random2 == 3 && tempRoom->roomDown == nullptr) {
                     roomMaxCount--;
                     tempRoom->roomDown = new Room();
                     tempRoom->roomDown->roomUp = tempRoom;
-                    CreateRooms(tempRoom->roomDown);
+                    CreateRooms(tempRoom->roomDown, texturemanager);
                 }
             }
 
@@ -557,12 +554,12 @@ void Map::CreateRooms(Room *&tempRoom) {
                 roomMaxCount--;
                 tempRoom->roomDown = new Room();
                 tempRoom->roomDown->roomUp = tempRoom;
-                CreateRooms(tempRoom->roomDown);
+                CreateRooms(tempRoom->roomDown, texturemanager);
                 if (random2 == 1 && tempRoom->roomRight == nullptr) {
                     roomMaxCount--;
                     tempRoom->roomRight = new Room();
                     tempRoom->roomRight->roomLeft = tempRoom;
-                    CreateRooms(tempRoom->roomRight);
+                    CreateRooms(tempRoom->roomRight, texturemanager);
                 }
             }
 
@@ -576,11 +573,10 @@ void Map::CreateRooms(Room *&tempRoom) {
     
 }
 
-void Map::CreateLevel(UI *ui) {
-    CreateRooms(startingRoom);
+void Map::CreateLevel(UI *ui, TextureManager *textureManager) {
+    CreateRooms(startingRoom, textureManager);
     currentRoom = startingRoom;
     std::cout <<"ROOM COUNT: " << Rooms.size() << "\n";
-    minimap->LoadTextures();
     //for (auto& it : startingRoom->GetFloors()) {
     //    minimap->CreateTile(*it.GetRectangle(),0,0);
     //}
@@ -635,9 +631,6 @@ void Map::CheckCollision(Player *player) {
 }
 
 Map::~Map() {
-    for (auto& it : Textures) {
-        SDL_DestroyTexture(it.GetTexture());
-    }
     for (auto& it : Rooms) {
         delete it;
     }

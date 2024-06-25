@@ -110,7 +110,6 @@ class Map
 {
     private:
         SDL_Renderer* renderer;
-        std::vector<Texture> Textures;
         std::vector<Room*> Rooms;
 
         int roomMaxCount = 50;
@@ -130,11 +129,11 @@ class Map
 
         void Render(SDL_Rect& camRect);
 
-        void LoadTextures();
+        void LoadTextures(TextureManager* texturemanager);
 
-        void CreateRooms(Room*& tempRoom);
+        void CreateRooms(Room*& tempRoom, TextureManager* texturemanager);
 
-        void CreateLevel(UI* ui);
+        void CreateLevel(UI* ui, TextureManager* textureManager);
 
         void CheckCollision(Player* player);
 

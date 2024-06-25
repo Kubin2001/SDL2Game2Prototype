@@ -68,20 +68,19 @@ class ParticlesManager
 {
     private:
         SDL_Renderer* renderer;
-        std::vector<Texture> Textures;
         std::vector<PlayerParticle> PlayerParticles;
         std::vector<EnemyParticle> EnemyParticles;
 
     public:
         ParticlesManager(SDL_Renderer* renderer);
         
-        void LoadTextures();
+        void LoadTextures(TextureManager* tetxureManager);
 
         void Render(SDL_Rect camRect);
 
-        void CreatePlayerParticle(SDL_Rect rect, int direction, int speedX, int speedY, int lifeTime, std::string textureName, double angle);
+        void CreatePlayerParticle(SDL_Rect rect, int direction, int speedX, int speedY, int lifeTime, std::string textureName, double angle, TextureManager* textureManager);
 
-        void CreateEnemyParticle(SDL_Rect rect, int direction, int speedX, int speedY, int lifeTime, std::string textureName, double angle);
+        void CreateEnemyParticle(SDL_Rect rect, int direction, int speedX, int speedY, int lifeTime, std::string textureName, double angle, TextureManager* textureManager);
 
         template <typename T>
         void CheckColision(std::vector<T>& mobs,Player* player, SDL_Rect camRect);

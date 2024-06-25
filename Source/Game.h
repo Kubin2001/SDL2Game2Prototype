@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Map.h"
 #include "UI.h"
+#include "TextureManager.h"
 
 class Game {
 private:
@@ -14,6 +15,7 @@ private:
     std::unique_ptr<Camera> camera;
     std::unique_ptr<Map> map;
     std::unique_ptr<UI> ui;
+    std::unique_ptr<TextureManager> textureManager;
     SDL_Event event = {};
 
 

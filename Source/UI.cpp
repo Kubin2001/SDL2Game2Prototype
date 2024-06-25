@@ -84,16 +84,10 @@ UI::UI(SDL_Renderer *renderer){
 }
 
 
-void UI::LoadTextures() {
-    LoadMultipleTextures(Textures, "Textures/Interface", renderer);
-    for (auto& it : Textures) {
-        if (it.GetName() == "buttonGrey") {
-            Button::SetGreyTexture(it.GetTexture());
-        }
-        else if (it.GetName() == "buttonWhite") {
-            Button::SetWhiteTexture(it.GetTexture());
-        }
-    }
+void UI::LoadTextures(TextureManager* textureManager) {
+    textureManager->LoadMultipleTextures("Textures/Interface");
+    Button::SetGreyTexture(textureManager->GetTextureByName("buttonGrey"));
+    Button::SetWhiteTexture(textureManager->GetTextureByName("buttonWhite"));
 }
 
 void UI::Render() {
@@ -171,9 +165,6 @@ void UI::OpenMap(SDL_Event event) {
 
 UI::~UI() {
     delete font;
-    for (auto& it : Textures) {
-        SDL_DestroyTexture(it.GetTexture());
-    }
     if (!Buttons.empty()) {
         Buttons.clear();
     }

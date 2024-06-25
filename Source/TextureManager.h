@@ -2,31 +2,30 @@
 #include <iostream>
 #include <SDL.h>
 #include <vector>
+#include <unordered_map>
 #include "SDL_image.h"
 
 
-class Texture {
+
+class TextureManager {
 	private:
-		SDL_Texture* texture;
-		std::string name = "";
+		std::unordered_map<std::string, SDL_Texture *> Textures;
+		SDL_Renderer* renderer = nullptr;
+
 	public:
-		SDL_Texture* GetTexture();
+		
+		TextureManager(SDL_Renderer* renderer);
+		
+		SDL_Texture* LoadSingleTexture(const char* file);
 
-		void SetTexture(SDL_Texture* temptex);
 
-		std::string GetName();
+		void LoadMultipleTextures(const std::string& directory);
 
-		void SetName(std::string temp);
+		SDL_Texture* GetTextureByName(const std::string& name);
 
-		bool operator < (Texture& other) {
-			return name < other.name;
-		}
+		bool DeleteTexture(const std::string & name);
+		
+		~TextureManager();
+
+
 };
-
-bool TetxureSortHelper(Texture &temp1, Texture &temp2);
-
-
-SDL_Texture* load(const char* file, SDL_Renderer* ren);
-
-
-void LoadMultipleTextures(std::vector<Texture>&vector, const std::string& directory, SDL_Renderer* renderer);

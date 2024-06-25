@@ -68,9 +68,9 @@ void Particle::Move() {
 }
 //
 
-void ParticlesManager::LoadTextures() {
+void ParticlesManager::LoadTextures(TextureManager * tetxureManager) {
     std::string directory = "Textures/Particles";
-    LoadMultipleTextures(Textures, directory, renderer);
+    tetxureManager->LoadMultipleTextures(directory);
 }
 
 void ParticlesManager::Render(SDL_Rect camRect) {
@@ -110,23 +110,15 @@ void ParticlesManager::Render(SDL_Rect camRect) {
     }
 }
 
-void ParticlesManager::CreatePlayerParticle(SDL_Rect rect, int direction, int speedX, int speedY, int lifeTime, std::string textureName, double angle) {
+void ParticlesManager::CreatePlayerParticle(SDL_Rect rect, int direction, int speedX, int speedY, int lifeTime, std::string textureName, double angle, TextureManager *textureManager) {
     PlayerParticle temp(rect,direction,speedX,speedY,lifeTime,angle);
-    for (auto& it : Textures) {
-        if (textureName == it.GetName()) {
-            temp.SetTexture(it.GetTexture());
-        }
-    }
+    temp.SetTexture(textureManager->GetTextureByName(textureName));
     PlayerParticles.push_back(temp);
 }
 
-void ParticlesManager::CreateEnemyParticle(SDL_Rect rect, int direction, int speedX, int speedY, int lifeTime, std::string textureName, double angle) {
+void ParticlesManager::CreateEnemyParticle(SDL_Rect rect, int direction, int speedX, int speedY, int lifeTime, std::string textureName, double angle, TextureManager *textureManager) {
     EnemyParticle temp(rect,direction,speedX,speedY,lifeTime,angle);
-    for (auto& it : Textures) {
-        if (textureName == it.GetName()) {
-            temp.SetTexture(it.GetTexture());
-        }
-    }
+    temp.SetTexture(textureManager->GetTextureByName(textureName));
     EnemyParticles.push_back(temp);
 }
 
@@ -220,10 +212,6 @@ void ParticlesManager::MoveParticlesEnemy(const Uint8* state, Player* player) {
 
 
 ParticlesManager::~ParticlesManager() {
-    for (auto &it:Textures)
-    {
-        SDL_DestroyTexture(it.GetTexture());
-    }
 
 }
 

@@ -13,8 +13,8 @@ int main(int argv, char* argc[])
     //2 dziala
     unsigned int seed = 1;
 
-    //and(seed);
-    srand(static_cast<unsigned int>(time(0)));
+    srand(seed);
+    //srand(static_cast<unsigned int>(time(0)));
     Game* game = new Game();
 
     game->Start();

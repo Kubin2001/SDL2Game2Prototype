@@ -394,14 +394,51 @@ void Room::DrawMinimap(Minimap *minimap,int xOffset, int yOffset, std::optional<
         roomUp->DrawMinimap(minimap, localX, localY,'u');
     }
     if (roomRight != nullptr && prevRoom != 'l') {
-        int localX = xOffset;
-        int localY = yOffset -= (roomRight->Doors[0].GetRectangle()->y - Floors[0].GetRectangle()->w / 2);
+        int basicX = 200;
+        int multiply = 1;
+        for (auto& it : Floors) {
+            int temp = ((it.GetRectangle()->x - 200) / 950) +1;
+            if (multiply < temp) {
+                multiply = temp;
+            }
+        }
+        int localX = xOffset += ((40 * multiply) +(3/multiply));
+        localX = xOffset += (Doors[2].GetRectangle()->x / (25) / multiply - 40);
+        int localY = yOffset; 
         roomRight->DrawMinimap(minimap, localX, localY,'r');
     }
     if (roomDown != nullptr && prevRoom != 'u') {
-        int localX = xOffset -= (roomDown->Doors[1].GetRectangle()->x + Floors[0].GetRectangle()->w / 2);
-        int localY = yOffset;
-        roomDown->DrawMinimap(minimap, localX, localY,'d');
+        //int localX = xOffset -= ((roomDown->Doors[1].GetRectangle()->x + Floors[0].GetRectangle()->w / 20));
+        //int localY = yOffset;
+        //roomDown->DrawMinimap(minimap, localX, localY,'d');
+        /*int basicX = 100;
+        int multiply = 1;
+        for (auto& it : Floors) {
+            int temp = ((it.GetRectangle()->y - 100) / 550) + 1;
+            //std::cout << it.GetRectangle()->x << " ";
+            //std::cout << it.GetRectangle()->y << " ";
+            std::cout << multiply << "\n";
+            if (multiply < temp) {
+                multiply = temp;
+            }
+        }
+        int localX = xOffset;
+        int localY = yOffset += ((28 * multiply) + (3 / multiply));
+        roomDown->DrawMinimap(minimap, localX, localY, 'd');*/
+        int basicX = 100;
+        int multiply = 1;
+        for (auto& it : Floors) {
+            int temp = ((it.GetRectangle()->y - 100) / 550) + 1;
+            std::cout << temp << "\n";
+            if (multiply < temp) {
+                multiply = temp;
+            }
+        }
+        int localX = xOffset;
+        int localY = yOffset += ((48 * multiply) + (3 / multiply));
+        std::cout << localX << "\n";
+        std::cout << localY << "\n";
+        roomDown->DrawMinimap(minimap, localX, localY, 'd');
     }
 }
 

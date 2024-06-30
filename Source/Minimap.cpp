@@ -31,8 +31,8 @@ void Minimap::Render() {
 
 void Minimap::CreateTile(SDL_Rect rect, int CordDiffX, int CordDiffY) {
     TileMinimap temptile;
-    temptile.GetRectangle()->x = ((rect.x / 25) + windowHeight/2) + CordDiffX;
-    temptile.GetRectangle()->y = ((rect.y / 25) + windowWidth/2) + CordDiffY;
+    temptile.GetRectangle()->x = ((rect.x / 25) + windowWidth/2) + CordDiffX;
+    temptile.GetRectangle()->y = ((rect.y / 25) + windowHeight/2) + CordDiffY;
     temptile.GetRectangle()->w = 40;
     temptile.GetRectangle()->h = 24;
     Tiles.push_back(temptile);

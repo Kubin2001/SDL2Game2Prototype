@@ -112,7 +112,7 @@ class Map
         SDL_Renderer* renderer;
         std::vector<Room*> Rooms;
 
-        int roomMaxCount = 50;
+        int roomMaxCount = 10;
 
     public:
         Room* currentRoom = nullptr;

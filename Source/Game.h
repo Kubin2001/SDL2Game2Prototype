@@ -15,7 +15,6 @@ private:
     std::unique_ptr<Camera> camera;
     std::unique_ptr<Map> map;
     std::unique_ptr<UI> ui;
-    std::unique_ptr<TextureManager> textureManager;
     SDL_Event event = {};
 
 

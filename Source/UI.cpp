@@ -84,10 +84,10 @@ UI::UI(SDL_Renderer *renderer){
 }
 
 
-void UI::LoadTextures(TextureManager* textureManager) {
-    textureManager->LoadMultipleTextures("Textures/Interface");
-    Button::SetGreyTexture(textureManager->GetTextureByName("buttonGrey"));
-    Button::SetWhiteTexture(textureManager->GetTextureByName("buttonWhite"));
+void UI::LoadTextures() {
+    TextureManager::LoadMultipleTextures("Textures/Interface");
+    Button::SetGreyTexture(TextureManager::GetTextureByName("buttonGrey"));
+    Button::SetWhiteTexture(TextureManager::GetTextureByName("buttonWhite"));
 }
 
 void UI::Render() {

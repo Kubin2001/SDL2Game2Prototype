@@ -9,23 +9,24 @@
 
 class TextureManager {
 	private:
-		std::unordered_map<std::string, SDL_Texture *> Textures;
-		SDL_Renderer* renderer = nullptr;
+		static std::unordered_map<std::string, SDL_Texture *> Textures;
+		static SDL_Renderer* renderer;
 
 	public:
 		
-		TextureManager(SDL_Renderer* renderer);
+		static void Start(SDL_Renderer* ren);
 		
-		SDL_Texture* LoadSingleTexture(const char* file);
+		static SDL_Texture* LoadSingleTexture(const char* file);
 
 
-		void LoadMultipleTextures(const std::string& directory);
+		static void LoadMultipleTextures(const std::string& directory);
 
-		SDL_Texture* GetTextureByName(const std::string& name);
+		static SDL_Texture* GetTextureByName(const std::string& name);
 
-		bool DeleteTexture(const std::string & name);
+		static bool DeleteTexture(const std::string & name);
+
+		static void Clear();
 		
-		~TextureManager();
 
 
 };

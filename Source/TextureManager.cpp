@@ -5,9 +5,12 @@
 #include <vector>
 #include "TextureManager.h"
 
+std::unordered_map<std::string, SDL_Texture*> TextureManager::Textures;
+SDL_Renderer* TextureManager::renderer = nullptr;
 
-TextureManager::TextureManager(SDL_Renderer *renderer) {
-    this->renderer = renderer;
+
+void TextureManager::Start(SDL_Renderer *ren) {
+   renderer = ren;
 }
 
 
@@ -55,7 +58,7 @@ bool TextureManager::DeleteTexture(const std::string& name) {
     }
 }
 
-TextureManager::~TextureManager() {
+void TextureManager::Clear() {
     for (auto& pair : Textures) {
         SDL_DestroyTexture(pair.second);
     }

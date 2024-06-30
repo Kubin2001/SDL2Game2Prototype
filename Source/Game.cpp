@@ -17,7 +17,6 @@ Game::Game() {
     camera = nullptr;
     map = nullptr;
     ui = nullptr;
-    textureManager = nullptr;
 }
 
 void Game::Start() {
@@ -30,17 +29,17 @@ void Game::Start() {
     camera = std::make_unique<Camera>();
     map = std::make_unique<Map>(renderer);
     ui = std::make_unique<UI>(renderer);
-    textureManager = std::make_unique<TextureManager>(renderer);
+    TextureManager::Start(renderer);
     LoadTextures();
-    map->CreateLevel(ui.get(),textureManager.get());
+    map->CreateLevel(ui.get());
 
 
 }
 
 void Game::LoadTextures() {
-    player->SetTexture(textureManager->LoadSingleTexture("textures/player.png"));
-    map->LoadTextures(textureManager.get());
-    ui->LoadTextures(textureManager.get());
+    player->SetTexture(TextureManager::LoadSingleTexture("textures/player.png"));
+    map->LoadTextures();
+    ui->LoadTextures();
 }
 
 void Game::Events() {

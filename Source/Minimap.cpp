@@ -16,11 +16,11 @@ Minimap::Minimap(SDL_Renderer * renderer) {
     this->renderer = renderer;
 }
 
-void Minimap::LoadTextures(TextureManager * texureManger) {
-    texureManger->LoadMultipleTextures("Textures/Interface/Minimap");
-    textureTile = texureManger->GetTextureByName("Tile");
-    texturePlayer = texureManger->GetTextureByName("Player");
-    textureDoor = texureManger->GetTextureByName("Doors");
+void Minimap::LoadTextures() {
+    TextureManager::LoadMultipleTextures("Textures/Interface/Minimap");
+    textureTile = TextureManager::GetTextureByName("Tile");
+    texturePlayer = TextureManager::GetTextureByName("Player");
+    textureDoor = TextureManager::GetTextureByName("Doors");
 }
 
 void Minimap::Render() {

@@ -68,9 +68,9 @@ void Particle::Move() {
 }
 //
 
-void ParticlesManager::LoadTextures(TextureManager * tetxureManager) {
+void ParticlesManager::LoadTextures() {
     std::string directory = "Textures/Particles";
-    tetxureManager->LoadMultipleTextures(directory);
+    TextureManager::LoadMultipleTextures(directory);
 }
 
 void ParticlesManager::Render(SDL_Rect camRect) {

@@ -48,7 +48,7 @@ class Minimap
         
         Minimap(SDL_Renderer* renderer);
 
-        void LoadTextures(TextureManager* texureManger);
+        void LoadTextures();
 
         void Render();
 

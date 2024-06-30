@@ -60,7 +60,7 @@ class UI
 
         UI(SDL_Renderer* renderer);
 
-        void LoadTextures(TextureManager* textureManager);
+        void LoadTextures();
 
         void CreateSingleButton(int x, int y, int w, int h, int texture, std::optional<std::string> text, std::optional<int> textSize, std::optional<int> textStep, std::optional<bool> textsizePredefined);
 

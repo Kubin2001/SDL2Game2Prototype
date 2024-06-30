@@ -129,11 +129,11 @@ class Map
 
         void Render(SDL_Rect& camRect);
 
-        void LoadTextures(TextureManager* texturemanager);
+        void LoadTextures();
 
-        void CreateRooms(Room*& tempRoom, TextureManager* texturemanager);
+        void CreateRooms(Room*& tempRoom);
 
-        void CreateLevel(UI* ui, TextureManager* textureManager);
+        void CreateLevel(UI* ui);
 
         void CheckCollision(Player* player);
 

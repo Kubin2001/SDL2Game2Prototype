@@ -74,7 +74,7 @@ class ParticlesManager
     public:
         ParticlesManager(SDL_Renderer* renderer);
         
-        void LoadTextures(TextureManager* tetxureManager);
+        void LoadTextures();
 
         void Render(SDL_Rect camRect);
 

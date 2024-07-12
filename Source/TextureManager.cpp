@@ -14,11 +14,11 @@ void TextureManager::Start(SDL_Renderer *ren) {
 }
 
 
-SDL_Texture* TextureManager::LoadSingleTexture(const char* filePath) {
+void TextureManager::LoadSingleTexture(const char* filePath, const std::string& name) {
 	SDL_Surface* tmpSurface = IMG_Load(filePath);
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
 	SDL_FreeSurface(tmpSurface);
-	return tex;
+    Textures.insert(std::make_pair(name, tex));
 }
 
 
@@ -29,8 +29,7 @@ void TextureManager::LoadMultipleTextures(const std::string& directory){
             std::string pathString = entry.path().string();
             const char* path = pathString.c_str();
             std::string name = entry.path().stem().string();
-
-            Textures.insert(std::make_pair (name, LoadSingleTexture(path) ));
+            LoadSingleTexture(path, name);
         }
     }
 }

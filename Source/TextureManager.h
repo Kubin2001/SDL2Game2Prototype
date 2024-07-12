@@ -16,8 +16,7 @@ class TextureManager {
 		
 		static void Start(SDL_Renderer* ren);
 		
-		static SDL_Texture* LoadSingleTexture(const char* file);
-
+		static void LoadSingleTexture(const char* filePath, const std::string& name);
 
 		static void LoadMultipleTextures(const std::string& directory);
 

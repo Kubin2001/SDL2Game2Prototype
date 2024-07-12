@@ -37,7 +37,8 @@ void Game::Start() {
 }
 
 void Game::LoadTextures() {
-    player->SetTexture(TextureManager::LoadSingleTexture("textures/player.png"));
+    TextureManager::LoadSingleTexture("textures/player.png","player");
+    player->SetTexture(TextureManager::GetTextureByName("player"));
     map->LoadTextures();
     ui->LoadTextures();
 }

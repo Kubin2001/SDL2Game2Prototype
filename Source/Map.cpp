@@ -384,61 +384,38 @@ void Room::DrawMinimap(Minimap *minimap,int xOffset, int yOffset, std::optional<
         minimap->CreateTile(*it.GetRectangle(), xOffset, yOffset);
     }
     if (roomLeft != nullptr && prevRoom != 'r') {
-        int localX = xOffset -= (roomLeft->Doors[2].GetRectangle()->x - Floors[0].GetRectangle()->w - 50);
-        int localY = yOffset -= (roomLeft->Doors[2].GetRectangle()->y - Floors[0].GetRectangle()->h / 2);
-        roomLeft->DrawMinimap(minimap, localX, localY,'l');
+        int x = xOffset;
+        x -= (Doors[0].GetRectangle()->x / 25);
+        int y = yOffset;
+        roomLeft->DrawMinimap(minimap, x, y, 'l');
     }
     if (roomUp != nullptr && prevRoom != 'd') {
-        int localX = xOffset -= (roomUp->Doors[3].GetRectangle()->x - Floors[0].GetRectangle()->h - 50);
-        int localY = yOffset -= (roomUp->Doors[3].GetRectangle()->y - Floors[0].GetRectangle()->w / 2);
-        roomUp->DrawMinimap(minimap, localX, localY,'u');
+
+        int x = xOffset;
+        int y = yOffset;
+        y -= (Doors[1].GetRectangle()->y / 25);
+        roomUp->DrawMinimap(minimap, x, y, 'u');
     }
     if (roomRight != nullptr && prevRoom != 'l') {
-        int basicX = 200;
-        int multiply = 1;
-        for (auto& it : Floors) {
-            int temp = ((it.GetRectangle()->x - 200) / 950) +1;
-            if (multiply < temp) {
-                multiply = temp;
-            }
-        }
-        int localX = xOffset += ((40 * multiply) +(3/multiply));
-        localX = xOffset += (Doors[2].GetRectangle()->x / (25) / multiply - 40);
-        int localY = yOffset; 
-        roomRight->DrawMinimap(minimap, localX, localY,'r');
+        int x = xOffset;
+        x += (Doors[2].GetRectangle()->x /25); 
+        int y = yOffset;
+        roomRight->DrawMinimap(minimap, x, y, 'r');
+        /*std::cout << "--------------------------------\n";
+        std::cout << "X: " << x << "\n";
+        std::cout << "Y: " << y << "\n";
+        std::cout << "FloorX: " << Floors[0].GetRectangle()->x << "\n";
+        std::cout << "FloorY: " << Floors[0].GetRectangle()->y << "\n";
+        
+
+        roomRight->DrawMinimap(minimap, x, y, 'r'); */
+
     }
     if (roomDown != nullptr && prevRoom != 'u') {
-        //int localX = xOffset -= ((roomDown->Doors[1].GetRectangle()->x + Floors[0].GetRectangle()->w / 20));
-        //int localY = yOffset;
-        //roomDown->DrawMinimap(minimap, localX, localY,'d');
-        /*int basicX = 100;
-        int multiply = 1;
-        for (auto& it : Floors) {
-            int temp = ((it.GetRectangle()->y - 100) / 550) + 1;
-            //std::cout << it.GetRectangle()->x << " ";
-            //std::cout << it.GetRectangle()->y << " ";
-            std::cout << multiply << "\n";
-            if (multiply < temp) {
-                multiply = temp;
-            }
-        }
-        int localX = xOffset;
-        int localY = yOffset += ((28 * multiply) + (3 / multiply));
-        roomDown->DrawMinimap(minimap, localX, localY, 'd');*/
-        int basicX = 100;
-        int multiply = 1;
-        for (auto& it : Floors) {
-            int temp = ((it.GetRectangle()->y - 100) / 550) + 1;
-            std::cout << temp << "\n";
-            if (multiply < temp) {
-                multiply = temp;
-            }
-        }
-        int localX = xOffset;
-        int localY = yOffset += ((48 * multiply) + (3 / multiply));
-        std::cout << localX << "\n";
-        std::cout << localY << "\n";
-        roomDown->DrawMinimap(minimap, localX, localY, 'd');
+        int x = xOffset;
+        int y = yOffset;
+        y += (Doors[3].GetRectangle()->y / 25);
+        roomDown->DrawMinimap(minimap, x, y, 'd');
     }
 }
 

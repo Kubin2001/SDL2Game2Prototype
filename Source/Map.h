@@ -48,7 +48,8 @@ class Floor {
         bool GetErasable();
         void SetErasable(bool temp);
         SDL_Rect* GetRectangle();
-
+        int posX = 0;
+        int posY = 0;
 };
 
 class Room {
@@ -88,7 +89,7 @@ class Room {
 
         void CreateWalls();
 
-        void MoveRectangle(Floor& floor, char deniedSide);
+        void MoveRectangle(Floor& floor, char deniedSide, bool array[50][50], int &xPos, int &yPos);
 
         void RenderRoom(SDL_Renderer* renderer, SDL_Rect& camRect);
 
@@ -112,7 +113,8 @@ class Map
         SDL_Renderer* renderer;
         std::vector<Room*> Rooms;
 
-        int roomMaxCount = 20;
+        int roomMaxCount = 80;
+        bool mapArray[50][50];
 
     public:
         Room* currentRoom = nullptr;
@@ -131,7 +133,7 @@ class Map
 
         void LoadTextures();
 
-        void CreateRooms(Room*& tempRoom);
+        void CreateRooms(Room*& tempRoom, int posX, int posY);
 
         void CreateLevel(UI* ui);
 

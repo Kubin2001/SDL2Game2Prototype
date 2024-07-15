@@ -209,29 +209,53 @@ int Room::CheckCollisionDoors(Player* player) {
 
 //ROOM
 
-void Room::MoveRectangle(Floor &floor,char deniedSide) {
+void Room::MoveRectangle(Floor &floor,char deniedSide, bool array[50][50],int &xPos,int &yPos) {
     int random = rand() % 4 + 1;
     switch (random)
     {
         case 1:
-            if (deniedSide == 'l') {floor.GetRectangle()->x += 950; }
+            if (deniedSide == 'l' && array[floor.posX +1][floor.posY] == 0) { 
+                floor.GetRectangle()->x += 950;
+                floor.posX += 1;
+            }
 
-            else{floor.GetRectangle()->x -= 950; }
+            else if(array[floor.posX -1][floor.posY] == 0) {
+                floor.GetRectangle()->x -= 950; 
+                floor.posX -= 1;
+            }
             break;
         case 2:
-            if (deniedSide == 'u') {floor.GetRectangle()->y -= 550; }
+            if (deniedSide == 'u' && array[floor.posX][floor.posY +1] == 0) {
+                floor.GetRectangle()->y += 550;
+                floor.posY += 1;
+            }
 
-            else{floor.GetRectangle()->y += 550; }
+            else if (array[floor.posX][floor.posY -1] == 0){
+                floor.GetRectangle()->y -= 550;
+                floor.posY -= 1;
+            }
             break;
         case 3:
-            if (deniedSide == 'r') {floor.GetRectangle()->x -= 950; }
+            if (deniedSide == 'r' && array[floor.posX - 1][floor.posY] == 0) {
+                floor.GetRectangle()->x -= 950; 
+                floor.posX -= 1;
+            }
 
-            else{floor.GetRectangle()->x += 950; }
+            else if (array[floor.posX + 1][floor.posY] == 0){
+                floor.GetRectangle()->x += 950; 
+                floor.posX += 1;
+            }
             break;
         case 4:
-            if (deniedSide == 'd') {floor.GetRectangle()->y += 550; }
+            if (deniedSide == 'd'&& array[floor.posX][floor.posY - 1] == 0) {
+                floor.GetRectangle()->y -= 550;
+                floor.posY -= 1;
+            }
 
-            else{floor.GetRectangle()->y -= 550; }
+            else if (array[floor.posX][floor.posY + 1] == 0){
+                floor.GetRectangle()->y += 550; 
+                floor.posY += 1;
+            }
             break;
     }
 }
@@ -385,33 +409,40 @@ void Room::DrawMinimap(Minimap *minimap,int xOffset, int yOffset, std::optional<
     }
     if (roomLeft != nullptr && prevRoom != 'r') {
         int x = xOffset;
-        x -= (Doors[0].GetRectangle()->x / 25);
         int y = yOffset;
+        int temp = 0;
+        std::cout <<"Here " << Doors[0].GetRectangle()->y - Floors[0].GetRectangle()->h / 2 << " ";
+        if (std::abs(((Doors[0].GetRectangle()->y - Floors[0].GetRectangle()->h / 2))) == -100) {
+            temp = 1;
+        }
+        else
+        {
+            temp = std::abs((((Doors[0].GetRectangle()->y - Floors[0].GetRectangle()->h / 2)) - 100)) / 950;
+        }
+        x -= (temp * 40) + 4;
         roomLeft->DrawMinimap(minimap, x, y, 'l');
     }
     if (roomUp != nullptr && prevRoom != 'd') {
-
         int x = xOffset;
         int y = yOffset;
-        y -= (Doors[1].GetRectangle()->y / 25);
+        int temp = 0;
+        if (std::abs(((Doors[1].GetRectangle()->y - Floors[0].GetRectangle()->w / 2))) == -400) {
+            temp = 1;
+        }
+        else
+        {
+            temp = std::abs((((Doors[1].GetRectangle()->y - Floors[0].GetRectangle()->w / 2)) - 400))/550;
+        }
+        y -= (temp *24) + 4;
         roomUp->DrawMinimap(minimap, x, y, 'u');
     }
-    if (roomRight != nullptr && prevRoom != 'l') {
+    if (roomRight != nullptr && prevRoom != 'l') { // Git
         int x = xOffset;
         x += (Doors[2].GetRectangle()->x /25); 
         int y = yOffset;
         roomRight->DrawMinimap(minimap, x, y, 'r');
-        /*std::cout << "--------------------------------\n";
-        std::cout << "X: " << x << "\n";
-        std::cout << "Y: " << y << "\n";
-        std::cout << "FloorX: " << Floors[0].GetRectangle()->x << "\n";
-        std::cout << "FloorY: " << Floors[0].GetRectangle()->y << "\n";
-        
-
-        roomRight->DrawMinimap(minimap, x, y, 'r'); */
-
     }
-    if (roomDown != nullptr && prevRoom != 'u') {
+    if (roomDown != nullptr && prevRoom != 'u') { // Git
         int x = xOffset;
         int y = yOffset;
         y += (Doors[3].GetRectangle()->y / 25);
@@ -435,7 +466,7 @@ void Map::LoadTextures() {
     minimap->LoadTextures();
 }
 
-void Map::CreateRooms(Room *&tempRoom) {
+void Map::CreateRooms(Room *&tempRoom,int posX,int posY) {
     if (startingRoom == nullptr) {
         tempRoom = new Room();
         startingRoom = tempRoom;
@@ -451,15 +482,31 @@ void Map::CreateRooms(Room *&tempRoom) {
     tempRoom->GetFloors().back().GetRectangle()->y = 100;
     tempRoom->GetFloors().back().GetRectangle()->w = 1000;
     tempRoom->GetFloors().back().GetRectangle()->h = 600;
+
+    tempRoom->GetFloors().back().posX = posX;
+    tempRoom->GetFloors().back().posY = posY;
+    mapArray[tempRoom->GetFloors().back().posX][tempRoom->GetFloors().back().posY] = 1;
+
     int random = 0;
     Floor leftRect = tempRoom->GetFloors().back();
+    leftRect.posX = posX;
+    leftRect.posY = posY;
     Floor rightRect = tempRoom->GetFloors().back();
+    rightRect.posX = posX;
+    rightRect.posY = posY;
     Floor upperRect = tempRoom->GetFloors().back();
+    upperRect.posX = posX;
+    upperRect.posY = posY;
     Floor downRect = tempRoom->GetFloors().back();
+    downRect.posX = posX;
+    downRect.posY = posY;
+
     bool leftPossible = false;
     bool rightPossible = false;
     bool upperPossible = false;
     bool downPossible = false;
+    
+
     while (roomMaxCount > 0)
     {
         random = rand() % 8 +1;
@@ -467,28 +514,25 @@ void Map::CreateRooms(Room *&tempRoom) {
         if (tempRoom->roomLeft == nullptr && random == 1) {
             roomMaxCount--;
             if (leftPossible) {
-                tempRoom->MoveRectangle(leftRect, 'r');
+                tempRoom->MoveRectangle(leftRect, 'r',mapArray,posX,posY);
                 tempRoom->GetFloors().push_back(leftRect);
             }
-            else
+            else if(mapArray[leftRect.posX -1][leftRect.posY] == 0)
             {
                 leftRect.GetRectangle()->x -= 950;
                 tempRoom->GetFloors().push_back(leftRect);
                 leftPossible = true;
+                leftRect.posX--;
+                mapArray[leftRect.posX][leftRect.posY] = 1;
             }
         }
-        else if(random == 5){
+        else if(random == 5 && mapArray[leftRect.posX - 1][leftRect.posY] == 0){
             if (tempRoom->roomLeft == nullptr) {
                 roomMaxCount--;
+                posX--;
                 tempRoom->roomLeft = new Room();
                 tempRoom->roomLeft->roomRight = tempRoom;
-                CreateRooms(tempRoom->roomLeft);
-                if (random2 == 1 && tempRoom->roomUp == nullptr) {
-                    roomMaxCount--;
-                    tempRoom->roomUp = new Room();
-                    tempRoom->roomUp->roomDown = tempRoom;
-                    CreateRooms(tempRoom->roomUp);
-                }
+                CreateRooms(tempRoom->roomLeft,posX,posY);
             }
 
         }
@@ -496,56 +540,50 @@ void Map::CreateRooms(Room *&tempRoom) {
         else if (tempRoom->roomUp == nullptr && random == 2) {
             roomMaxCount--;
             if (upperPossible) {
-                tempRoom->MoveRectangle(upperRect, 'd');
+                tempRoom->MoveRectangle(upperRect, 'd',mapArray, posX, posY);
                 tempRoom->GetFloors().push_back(upperRect);
             }
-            else
+            else if (mapArray[upperRect.posX][upperRect.posY-1] == 0)
             {
                 upperRect.GetRectangle()->y -= 550;
                 tempRoom->GetFloors().push_back(upperRect);
                 upperPossible = true;
+                upperRect.posY--;
+                mapArray[upperRect.posX][upperRect.posY] = 1;
             }
         }
-        else if (random == 6) {
+        else if (random == 6 && mapArray[upperRect.posX][upperRect.posY -1] == 0) {
             if (tempRoom->roomUp == nullptr) {
                 roomMaxCount--;
+                posY--;
                 tempRoom->roomUp = new Room();
                 tempRoom->roomUp->roomDown = tempRoom;
-                CreateRooms(tempRoom->roomUp);
-                if (random2 == 2 && tempRoom->roomLeft == nullptr) {
-                    roomMaxCount--;
-                    tempRoom->roomLeft = new Room();
-                    tempRoom->roomLeft->roomRight = tempRoom;
-                    CreateRooms(tempRoom->roomLeft);
-                }
+                CreateRooms(tempRoom->roomUp,posX,posY);
             }
         }
 
         else if (tempRoom->roomRight == nullptr && random == 3) {
             roomMaxCount--;
             if (rightPossible) {
-                tempRoom->MoveRectangle(rightRect, 'l');
+                tempRoom->MoveRectangle(rightRect, 'l', mapArray, posX, posY);
                 tempRoom->GetFloors().push_back(rightRect);
             }
-            else
+            else if (mapArray[rightRect.posX + 1][rightRect.posY] == 0)
             {
                 rightRect.GetRectangle()->x += 950;
                 tempRoom->GetFloors().push_back(rightRect);
                 rightPossible = true;
+                rightRect.posX++;
+                mapArray[rightRect.posX][rightRect.posY] = 1;
             }
         }
-        else if (random == 7) {
+        else if (random == 7 && mapArray[rightRect.posX + 1][rightRect.posY] == 0) {
             if (tempRoom->roomRight == nullptr) {
                 roomMaxCount--;
+                posX++;
                 tempRoom->roomRight = new Room();
                 tempRoom->roomRight->roomLeft = tempRoom;
-                CreateRooms(tempRoom->roomRight);
-                if (random2 == 3 && tempRoom->roomDown == nullptr) {
-                    roomMaxCount--;
-                    tempRoom->roomDown = new Room();
-                    tempRoom->roomDown->roomUp = tempRoom;
-                    CreateRooms(tempRoom->roomDown);
-                }
+                CreateRooms(tempRoom->roomRight,posX,posY);
             }
 
         }
@@ -553,28 +591,25 @@ void Map::CreateRooms(Room *&tempRoom) {
         else if (tempRoom->roomDown == nullptr && random == 4) {
             roomMaxCount--;
             if (downPossible) {
-                tempRoom->MoveRectangle(downRect, 'u');
+                tempRoom->MoveRectangle(downRect, 'u', mapArray, posX, posY);
                 tempRoom->GetFloors().push_back(downRect);
             }
-            else
+            else if (mapArray[downRect.posX][downRect.posY +1] == 0)
             {
                 downRect.GetRectangle()->y += 550;
                 tempRoom->GetFloors().push_back(downRect);
                 downPossible = true;
+                downRect.posY++;
+                mapArray[downRect.posX][downRect.posY] = 1;
             }
         }
-        else if (random == 8) {
+        else if (random == 8 && mapArray[downRect.posX - 1][downRect.posY +1] == 0) {
             if (tempRoom->roomDown == nullptr) {
                 roomMaxCount--;
+                posY++;
                 tempRoom->roomDown = new Room();
                 tempRoom->roomDown->roomUp = tempRoom;
-                CreateRooms(tempRoom->roomDown);
-                if (random2 == 1 && tempRoom->roomRight == nullptr) {
-                    roomMaxCount--;
-                    tempRoom->roomRight = new Room();
-                    tempRoom->roomRight->roomLeft = tempRoom;
-                    CreateRooms(tempRoom->roomRight);
-                }
+                CreateRooms(tempRoom->roomDown,posX,posY);
             }
 
         }
@@ -588,7 +623,14 @@ void Map::CreateRooms(Room *&tempRoom) {
 }
 
 void Map::CreateLevel(UI *ui) {
-    CreateRooms(startingRoom);
+    for (size_t i = 0; i < 50; i++)
+    {
+        for (size_t j = 0; j < 50; j++)
+        {
+            mapArray[i][j] = 0;
+        }
+    }
+    CreateRooms(startingRoom,25,25);
     currentRoom = startingRoom;
     std::cout <<"ROOM COUNT: " << Rooms.size() << "\n";
     //for (auto& it : startingRoom->GetFloors()) {
@@ -596,6 +638,20 @@ void Map::CreateLevel(UI *ui) {
     //}
     currentRoom->DrawMinimap(minimap.get(), 0, 0,std::nullopt);
     ui->minimap = std::move(minimap);
+    for (size_t i = 0; i < 50; i++)
+    {
+        for (size_t j = 0; j < 50; j++)
+        {
+            if (mapArray[i][j] == 0) {
+                std::cout << " ";
+            }
+            else
+            {
+                std::cout << mapArray[i][j];
+            }
+        }
+        std::cout << "\n";
+    }
 
 }
 
